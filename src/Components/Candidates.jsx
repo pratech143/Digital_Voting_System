@@ -7,7 +7,7 @@ const Candidates = () => {
 
     useEffect(() => {
         // Fetch data from the PHP backend
-        axios.get('http://localhost/Voting-System/backend/api.php')
+        axios.get('http://localhost/election_system/Digital_Voting_System/backend/api.php')
             .then(response => {
                 setCandidates(response.data); // Store the data in state
             })
