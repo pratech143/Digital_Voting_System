@@ -1,11 +1,12 @@
 import React from 'react';
 import Candidates from './Components/Candidates';
+import Login from './Components/Login';
 
 function App() {
     return (
         <div>
-            <h1>Voting System</h1>
-            <Candidates />
+            
+            <Login/>
         </div>
     );
 }
