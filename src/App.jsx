@@ -1,12 +1,11 @@
 import React from 'react';
-import Candidates from './Components/Candidates';
-import Login from './Components/Login';
+import { Outlet } from 'react-router';
 
 function App() {
     return (
         <div>
             
-            <Login/>
+            <Outlet/>
         </div>
     );
 }
