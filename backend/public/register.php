@@ -2,6 +2,6 @@
 
 <!-- send status of success or error like status:"success" along with the success and error message like message:"email already used" -->
 
-<!-- error check: check if email is already used -->
+<!-- error check: check if email is already used set status exixts -->
  <!-- this is registration for website,registration for voting will be done later -->
   
