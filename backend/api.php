@@ -9,6 +9,5 @@ $data = [
     ['id' => 2, 'name' => 'Bob', 'votes' => 98],
 ];
 
-// Return the data as JSON
 echo json_encode($data);
 ?>
