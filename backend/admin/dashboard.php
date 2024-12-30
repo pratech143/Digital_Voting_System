@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'Digital_Voting_System/backend/config/database.php';
+include 'Digital_Voting_System/backend/config/database.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: Digital_Voting_System/backend/public/login.php");
