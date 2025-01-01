@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import baseApi from "../../Api/baseApi";
 
 const InputField = ({ type, placeholder, value, onChange, className }) => (
   <input
@@ -87,8 +88,7 @@ const Form = ({
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fname: "",
-    lname: "",
+    name: "",
     email: "",
     pass: "",
     loginEmail: "",
@@ -111,14 +111,13 @@ const Login = () => {
   const handleSubmit = async (e, isRegister) => {
     e.preventDefault();
 
-    const { fname, lname, email, pass, loginEmail, loginPass } = formData;
+    const { name, email, pass, loginEmail, loginPass } = formData;
     const fieldErrors = {};
 
     if (isRegister) {
-      if (!fname.trim()) fieldErrors.fname = "First name is required.";
-      if (!lname.trim()) fieldErrors.lname = "Last name is required.";
-      if (!/^\S+@\S+\.\S+$/.test(email)) fieldErrors.email = "Invalid email address.";
-      if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(pass)) {
+      if (!name.trim()) fieldErrors.name = "Name is required.";
+      if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)) fieldErrors.email = "Invalid email address.";
+      if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(pass)) {
         fieldErrors.pass = "Password must be at least 8 characters long and include letters and numbers.";
       }
     } else {
@@ -138,14 +137,11 @@ const Login = () => {
     // Submit data
     const endpoint = isRegister ? "register.php" : "login.php";
     const data = isRegister
-      ? { fname, lname, email, pass }
+      ? { name, email, pass }
       : { email: loginEmail, pass: loginPass };
 
     try {
-      const response = await axios.post(
-        `http://localhost/xampp/htdocs/Voting-System/backend/functions/${endpoint}`,
-        data
-      );
+      const response = await baseApi.post(`functions/${endpoint}`,data);
       if (response.data.status === "exists") {
         setError({ email: "Email is already taken. Please use another email." });
         return; // Exit if the email is already used
@@ -188,7 +184,7 @@ const Login = () => {
               </button>
             </div>
           ) : (
-            <div className="flex-1 bg-bluish text-white flex flex-col items-center justify-center p-6 border-gray-300 rounded-2xl rounded-bl-[25%] md:rounded-br-none rounded-br-[15%] md:rounded-tl-[25%]">
+            <div className="flex-1 order-2 bg-bluish text-white flex flex-col items-center justify-center p-6 border-gray-300 rounded-2xl rounded-bl-[25%] md:rounded-br-none rounded-br-[15%] md:rounded-tl-[25%]">
               <img src="/images/logo.png" alt="Logo" className="w-64 mb-6" />
               <h1 className="text-4xl font-semibold mb-4">Welcome Back to e-मत</h1>
               <p className="text-lg">Don't have an account?</p>
@@ -208,17 +204,10 @@ const Login = () => {
                 fields={[
                   {
                     type: "text",
-                    placeholder: "First name",
-                    value: formData.fname,
-                    onChange: (e) => handleInputChange(e, "fname"),
-                    errorKey: "fname",
-                  },
-                  {
-                    type: "text",
-                    placeholder: "Last name",
-                    value: formData.lname,
-                    onChange: (e) => handleInputChange(e, "lname"),
-                    errorKey: "lname",
+                    placeholder: "name",
+                    value: formData.name,
+                    onChange: (e) => handleInputChange(e, "name"),
+                    errorKey: "name",
                   },
                   {
                     type: "email",
@@ -241,6 +230,7 @@ const Login = () => {
               />
             ) : (
               <Form
+              className='order-1'
                 title="Login to e-मत"
                 error={loginError}
                 fields={[
