@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 function send_otp_email($recipientEmail, $otp) {
     $subject = "Your Login OTP";
     $message = "Dear User,\n\nYour One-Time Password is: $otp\n\nPlease use this OTP within 5 minutes.\n\nThank you,\nDeveloper Team";

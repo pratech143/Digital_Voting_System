@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 session_start();
 include 'Digital_Voting_System/backend/config/database.php';
 include 'Digital_Voting_System/backend/config/mail_config.php';

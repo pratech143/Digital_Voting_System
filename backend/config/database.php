@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 $host = 'localhost';
 $dbname = 'election_system'; 
 $username = 'root':
