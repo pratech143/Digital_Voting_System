@@ -1,62 +1,45 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-session_start();
-include 'Digital_Voting_System/backend/config/database.php';
+header('Content-Type: application/json');
+include '../config/database.php';
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $otp = trim($_POST['otp']);
-    $errors = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
 
-    if (empty($otp)) {
-        $errors[] = "OTP is required.";
-    } elseif (!isset($_SESSION['otp_code']) || $otp != $_SESSION['otp_code']) {
-        $errors[] = "Invalid or expired OTP.";
+    if (!$data) {
+        echo json_encode(["success" => false, "message" => "Invalid JSON input"]);
+        exit;
     }
 
-    if (empty($errors)) {
-        $userId = $_SESSION['user_id_temp'];
-        $role = $_SESSION['role_temp'];
+    $email = $data['email'] ?? null;
+    $otp = $data['otp'] ?? null;
 
-        $updateQuery = "UPDATE users SET last_login = NOW() WHERE user_id = $userId";
-        mysqli_query($conn, $updateQuery);
+    if (!$email || !$otp) {
+        echo json_encode(["success" => false, "message" => "Email and OTP are required"]);
+        exit;
+    }
 
-        $_SESSION['user_id'] = $userId;
-        unset($_SESSION['otp_code'], $_SESSION['otp_email'], $_SESSION['user_id_temp'], $_SESSION['role_temp']);
+    try {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND email_verification_token = ?");
+        $stmt->bind_param("ss", $email, $otp);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        if ($role === 'admin') {
-            header("Location: Digital_Voting_System/backend/admin/dashboard.php");
+        if ($result->num_rows > 0) {
+            $update_stmt = $conn->prepare("UPDATE users SET email_verified_at = NOW(), email_verification_token = NULL WHERE email = ?");
+            $update_stmt->bind_param("s", $email);
+            $update_stmt->execute();
+
+            echo json_encode([
+                "success" => true,
+                "message" => "OTP verified successfully. Your email has been verified."
+            ]);
         } else {
-            header("Location: Digital_Voting_System/backend/public/dashboard.php");
+            echo json_encode(["success" => false, "message" => "Invalid OTP or email."]);
         }
-        exit();
+    } catch (Exception $e) {
+        echo json_encode(["success" => false, "message" => "Error verifying OTP: " . $e->getMessage()]);
     }
+} else {
+    echo json_encode(["success" => false, "message" => "Invalid request method"]);
 }
 ?>
-
-<html>
-<head>
-    <title>Verify OTP</title>
-    <link rel="stylesheet" href="../assets/styles.css">
-</head>
-<body>
-<div class="container">
-    <h1>Verify OTP</h1>
-    <?php if (!empty($errors)): ?>
-        <div class="error-messages">
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <li><?php echo htmlspecialchars($error); ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
-    <form method="POST" action="">
-        <div>
-            <label for="otp">Enter OTP:</label>
-            <input type="text" name="otp" id="otp" required>
-        </div>
-        <button type="submit">Verify OTP</button>
-    </form>
-</div>
-</body>
-</html>

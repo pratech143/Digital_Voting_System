@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 session_start();
-include 'Digital_Voting_System/backend/config/database.php';
+include '../config/database.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: Digital_Voting_System/backend/public/login.php");
