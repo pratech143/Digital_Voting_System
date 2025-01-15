@@ -22,7 +22,7 @@ const OTP = () => {
     // Send OTP to server for verification using axios
     try {
       const response = await axios.post(
-        'http://localhost/xampp/htdocs/Voting-System/backend/functions/verify-otp.php', 
+        'http://localhost:3000//xampp/htdocs/Voting-System/backend/functions/verify-otp.php', 
         { otp }
       );
 
