@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$user_id) {
         echo json_encode(["success" => false, "message" => "User not authenticated"]);
         exit;
-    }
+    } 
     
     $location_id = $data['location_id'] ?? null;
     $ward_id = $data['ward_id'] ?? null;
