@@ -36,6 +36,23 @@ const PasswordField = ({ passType, value, onChange, toggleVisibility, className 
   </div>
 );
 
+const SelectField = ({ options, value, onChange, className }) => (
+  <select
+    value={value}
+    onChange={onChange}
+    className={`p-3 bg-slate-300 rounded-lg w-[80%] ${className}`}
+  >
+    <option value="" disabled>
+      Select Gender
+    </option>
+    {options.map((option, index) => (
+      <option key={index} value={option}>
+        {option}
+      </option>
+    ))}
+  </select>
+);
+
 const Form = ({
   title,
   error,
@@ -48,7 +65,7 @@ const Form = ({
   <form className="space-y-4" onSubmit={onSubmit}>
     <h1 className="text-2xl font-semibold mb-4">{title}</h1>
     {error.general && <p className="text-red-700">{error.general}</p>}
-    {fields.map(({ type, placeholder, value, onChange, isPassword, errorKey }, index) => (
+    {fields.map(({ type, placeholder, value, onChange, isPassword, errorKey, options }, index) => (
       <div key={index} className="space-y-1">
         {isPassword ? (
           <PasswordField
@@ -56,6 +73,13 @@ const Form = ({
             value={value}
             onChange={onChange}
             toggleVisibility={fields[index].toggleVisibility}
+          />
+        ) : options ? (
+          <SelectField
+            options={options}
+            value={value}
+            onChange={onChange}
+            className="w-[80%] p-3 bg-slate-300 rounded-lg"
           />
         ) : (
           <InputField
@@ -83,14 +107,13 @@ const Form = ({
   </form>
 );
 
-
-
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     pass: "",
+    gender: "",
     loginEmail: "",
     loginPass: "",
   });
@@ -111,7 +134,7 @@ const Login = () => {
   const handleSubmit = async (e, isRegister) => {
     e.preventDefault();
 
-    const { name, email, pass, loginEmail, loginPass } = formData;
+    const { name, email, pass, gender, loginEmail, loginPass } = formData;
     const fieldErrors = {};
 
     if (isRegister) {
@@ -120,6 +143,7 @@ const Login = () => {
       if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(pass)) {
         fieldErrors.pass = "Password must be at least 8 characters long and include letters and numbers.";
       }
+      if (!gender) fieldErrors.gender = "Gender is required.";
     } else {
       if (!/^\S+@\S+\.\S+$/.test(loginEmail)) fieldErrors.loginEmail = "Invalid email address.";
       if (!loginPass.trim()) fieldErrors.loginPass = "Password is required.";
@@ -134,36 +158,30 @@ const Login = () => {
       return;
     }
 
-    // Submit data
     const endpoint = isRegister ? "register.php" : "login.php";
     const data = isRegister
-      ? { name, email, pass }
+      ? { name, email, pass, gender }
       : { email: loginEmail, pass: loginPass };
 
     try {
-      const response = await baseApi.post(`functions/${endpoint}`,data);
+      const response = await baseApi.post(`functions/${endpoint}`, data);
       if (response.data.status === "exists") {
         setError({ email: "Email is already taken. Please use another email." });
-        return; // Exit if the email is already used
-      }
-      else if (response.data.status === "success") {
+      } else if (response.data.status === "success") {
         if (!isRegister) {
           alert("Logged in Successfully. Redirecting to Dashboard...");
           navigate("/dashboard");
         } else {
           alert("Registration successful!");
-          navigate('/otp',{state:{email}})
+          navigate("/otp", { state: { email } });
         }
-      }
-       else {
+      } else {
         setError({ general: response.data.message });
       }
     } catch {
       setError({ general: "Something went wrong. Please try again." });
     }
   };
-
-
 
   const toggleView = () => setView((prev) => (prev === "register" ? "login" : "register"));
 
@@ -224,13 +242,19 @@ const Login = () => {
                     toggleVisibility: togglePasswordVisibility,
                     errorKey: "pass",
                   },
+                  {
+                    options: ["Male", "Female", "Other"],
+                    value: formData.gender,
+                    onChange: (e) => handleInputChange(e, "gender"),
+                    errorKey: "gender",
+                  },
                 ]}
                 buttonText="Register"
                 onSubmit={(e) => handleSubmit(e, true)}
               />
             ) : (
               <Form
-              className='order-1'
+                className="order-1"
                 title="Login to e-मत"
                 error={loginError}
                 fields={[
