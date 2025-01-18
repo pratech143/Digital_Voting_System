@@ -1,6 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *"); // Replace * with your frontend URL for better security
-
+header("Access-Control-Allow-Origin: *");
 session_start();
 include 'Digital_Voting_System/backend/config/database.php';
 
