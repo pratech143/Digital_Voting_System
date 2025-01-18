@@ -1,4 +1,3 @@
 Succes = bool
 Data = real / error message 
 StatusCode
-

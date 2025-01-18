@@ -1,105 +1,59 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+header('Content-Type: application/json');
 session_start();
-require_once 'Digital_Voting_System/backend/config/database.php';
+include '../config/database.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
 
-$user_id = $_SESSION['user_id'];
-$query = "SELECT * FROM users WHERE user_id = $user_id";
-$result = mysqli_query($conn, $query);
-
-if (!$result || mysqli_num_rows($result) === 0) {
-    die("User not found.");
-}
-
-$user = mysqli_fetch_assoc($result);
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply_voter_id'])) {
-    if (!empty($_FILES['voter_id_image']['name'])) {
-        $target_dir = "Digital_Voting_System/backend/uploads/voter_ids/";
-        $file_name = uniqid() . "_" . basename($_FILES["voter_id_image"]["name"]);
-        $target_file = $target_dir . $file_name;
-        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-        $check = getimagesize($_FILES["voter_id_image"]["tmp_name"]);
-        if ($check === false) {
-            $error_message = "File is not an image.";
-        } elseif (!in_array($imageFileType, ['jpg', 'png', 'jpeg'])) {
-            $error_message = "Only JPG, JPEG, and PNG files are allowed.";
-        } elseif (move_uploaded_file($_FILES["voter_id_image"]["tmp_name"], $target_file)) {
-            $query = "UPDATE users SET voter_id_image_path = '$target_file', verified = 0 WHERE user_id = $user_id";
-            if (mysqli_query($conn, $query)) {
-                $success_message = "Application submitted successfully. Waiting for admin approval.";
-            } else {
-                $error_message = "Database update failed.";
-            }
-        } else {
-            $error_message = "There was an error uploading your file.";
-        }
-    } else {
-        $error_message = "Please upload a voter ID image.";
+    if (!$data) {
+        echo json_encode(["success" => false, "message" => "Invalid JSON input"]);
+        exit;
     }
+
+    $user_id = $_SESSION['user_id'] ?? null;
+    $name = $_SESSION['full_name'] ?? null;
+    $gender = $_SESSION['gender'] ?? null;
+
+    if (!$user_id) {
+        echo json_encode(["success" => false, "message" => "User not authenticated"]);
+        exit;
+    } 
+    
+    $location_id = $data['location_id'] ?? null;
+    $ward_id = $data['ward_id'] ?? null;
+    $role = $data['role'] ?? null;
+    $voter_id_image = $data['voter_id_image'] ?? null;
+
+    if (empty($location_id) || empty($role) || empty($voter_id_image)) {
+        echo json_encode(["success" => false, "message" => "All required fields must be provided"]);
+        exit;
+    }
+
+    try {
+        // upload Voter image
+        $upload_dir = '../uploads/voter_ids/';
+        $voter_id_image_path = $upload_dir . basename($voter_id_image['name']);
+        move_uploaded_file($voter_id_image['tmp_name'], $voter_id_image_path);
+
+        // update profile
+        $stmt = $conn->prepare("UPDATE users SET location_id = ?, ward_id = ?, role = ?, voter_id_image_path = ?, profile_completed = TRUE WHERE user_id = ?, full_name = ? gender = ?");
+        $stmt->bind_param("ssssssi", $location_id, $ward_id, $role, $voter_id_image_path, $user_id, $full_name, $gender);
+        $stmt->execute();
+
+        //awaiting admin verification
+        $stmt_status = $conn->prepare("UPDATE users SET status = 'awaiting_admin_approval' WHERE user_id = ?");
+        $stmt_status->bind_param("i", $user_id);
+        $stmt_status->execute();
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Profile updated successfully. Awaiting admin approval."
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(["success" => false, "message" => "Error updating profile: " . $e->getMessage()]);
+    }
+} else {
+    echo json_encode(["success" => false, "message" => "Invalid request method"]);
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <link rel="stylesheet" href="../styles/style.css">
-</head>
-<body>
-    <header>
-        <h1>Your Profile</h1>
-        <nav>
-            <ul>
-                <li><a href="dashboard.php">Dashboard</a></li>
-                <li><a href="notification.php">Notifications</a></li>
-                <li><a href="result.php">Results</a></li>
-                <li><a href="logout.php">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section>
-            <h2>Personal Details</h2>
-            <p><strong>Name:</strong> <?php echo htmlspecialchars($user['full_name']); ?></p>
-            <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-            <p><strong>Verification Status:</strong> 
-                <?php echo $user['verified'] ? 'Verified Voter' : 'Not Verified'; ?>
-            </p>
-            <?php if ($user['voter_id_image_path']): ?>
-                <p><strong>Voter ID Application:</strong> Pending Approval</p>
-            <?php endif; ?>
-        </section>
-
-        <section>
-            <h2>Apply for Digital Voter ID</h2>
-            <?php if (!$user['verified']): ?>
-                <form method="POST" enctype="multipart/form-data">
-                    <label for="voter_id_image">Upload Voter ID Image:</label>
-                    <input type="file" name="voter_id_image" id="voter_id_image" accept=".jpg,.jpeg,.png">
-                    <button type="submit" name="apply_voter_id">Apply</button>
-                </form>
-                <?php if (isset($success_message)): ?>
-                    <p class="success"><?php echo $success_message; ?></p>
-                <?php elseif (isset($error_message)): ?>
-                    <p class="error"><?php echo $error_message; ?></p>
-                <?php endif; ?>
-            <?php else: ?>
-                <p>You are already verified as a voter.</p>
-            <?php endif; ?>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; <?php echo date('Y'); ?> Online Voting System.</p>
-    </footer>
-</body>
-</html>
