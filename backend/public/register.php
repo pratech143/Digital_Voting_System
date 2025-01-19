@@ -10,7 +10,7 @@ error_reporting(E_ALL);
 header('Content-Type: application/json');
 
 // CORS headers
-header("Access-Control-Allow-Origin: http://localhost:5173/"); // Frontend URL, adjust if necessary
+header("Access-Control-Allow-Origin:*"); // Frontend URL, adjust if necessary
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");

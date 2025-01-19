@@ -22,7 +22,7 @@ const OTP = () => {
     // Send OTP to server for verification using axios
     try {
       const response = await axios.post(
-        'http://localhost:3000//xampp/htdocs/Voting-System/backend/functions/verify-otp.php', 
+        'http://localhost:30//xampp/htdocs/Voting-System/backend/functions/verify-otp.php', 
         { otp }
       );
 
@@ -67,8 +67,9 @@ const OTP = () => {
         {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
         {isSuccess && <p className="text-green-500 text-sm text-center mb-4">OTP Verified Successfully!</p>}
 
-        <button type="submit" className="w-full py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition duration-200">
+        <button type="submit" onClick={handleSubmit} className="w-full py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition duration-200">
           Submit OTP
+          
         </button>
       </form>
     </div>

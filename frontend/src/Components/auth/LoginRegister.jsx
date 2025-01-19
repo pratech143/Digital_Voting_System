@@ -164,15 +164,16 @@ const Login = () => {
       : { email: loginEmail, pass: loginPass };
 
     try {
-      const response = await baseApi.post(`${endpoint}`, data)
+      const response = await baseApi.post(`public/${endpoint}`, data)
+      console.log(response.data);
       if (response.data.status === "exists") {
         setError({ email: "Email is already taken. Please use another email." });
-      } else if (response.data.status === "success") {
+      } else if (response.data.success) {
         if (!isRegister) {
           alert("Logged in Successfully. Redirecting to Dashboard...");
           navigate("/dashboard");
         } else {
-          alert("Registration successful!");
+          alert("please verify your email to continue");
           navigate("/otp", { state: { email } });
         }
       } else {
