@@ -1,6 +1,11 @@
 <?php
-include '../config/database.php';
-include '../config/mail_config.php';
+// Ensure correct path for including database and mail config
+include '../config/database.php';  // Adjust path based on file location
+include '../config/mail_config.php';  // Adjust path based on file location
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Set content type for response
 header('Content-Type: application/json');
 
@@ -19,7 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Read the raw POST data (JSON)
 $data = json_decode(file_get_contents('php://input'), true);
 
-// If JSON data is not valid
+// Log the data to PHP error log to verify what is being received
+error_log(print_r($data, true)); // Logs to PHP error log (viewable in XAMPP logs)
+
 if (!$data) {
     echo json_encode(["success" => false, "message" => "Invalid JSON input"]);
     exit;
@@ -45,10 +52,6 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 // Hash the password
 $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-// Ensure correct path for including database and mail config
-include __DIR__ . '/../config/database.php';  // Adjust path based on file location
-include __DIR__ . '/../config/mail_config.php';  // Adjust path based on file location
 
 // Insert the new user into the database
 try {
