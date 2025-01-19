@@ -2,7 +2,6 @@
 // Ensure correct path for including database and mail config
 include '../config/database.php';  // Adjust path based on file location
 include '../config/mail_config.php';  // Adjust path based on file location
-include '../config/handle_cors.php';
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
