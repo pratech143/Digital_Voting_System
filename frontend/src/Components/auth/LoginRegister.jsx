@@ -164,7 +164,7 @@ const Login = () => {
       : { email: loginEmail, pass: loginPass };
 
     try {
-      const response = await baseApi.post(`functions/${endpoint}`, data);
+      const response = await baseApi.post("register.php", data)
       if (response.data.status === "exists") {
         setError({ email: "Email is already taken. Please use another email." });
       } else if (response.data.status === "success") {
