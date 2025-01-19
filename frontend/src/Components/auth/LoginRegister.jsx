@@ -110,9 +110,9 @@ const Form = ({
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
+    full_name: "",
     email: "",
-    pass: "",
+    password: "",
     gender: "",
     loginEmail: "",
     loginPass: "",
@@ -134,13 +134,13 @@ const Login = () => {
   const handleSubmit = async (e, isRegister) => {
     e.preventDefault();
 
-    const { name, email, pass, gender, loginEmail, loginPass } = formData;
+    const { full_name, email, password, gender, loginEmail, loginPass } = formData;
     const fieldErrors = {};
 
     if (isRegister) {
-      if (!name.trim()) fieldErrors.name = "Name is required.";
+      if (!full_name.trim()) fieldErrors.name = "Name is required.";
       if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)) fieldErrors.email = "Invalid email address.";
-      if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(pass)) {
+      if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
         fieldErrors.pass = "Password must be at least 8 characters long and include letters and numbers.";
       }
       if (!gender) fieldErrors.gender = "Gender is required.";
@@ -160,11 +160,11 @@ const Login = () => {
 
     const endpoint = isRegister ? "register.php" : "login.php";
     const data = isRegister
-      ? { name, email, pass, gender }
+      ? { full_name, email, password, gender }
       : { email: loginEmail, pass: loginPass };
 
     try {
-      const response = await baseApi.post("register.php", data)
+      const response = await baseApi.post(`${endpoint}`, data)
       if (response.data.status === "exists") {
         setError({ email: "Email is already taken. Please use another email." });
       } else if (response.data.status === "success") {
@@ -223,8 +223,8 @@ const Login = () => {
                   {
                     type: "text",
                     placeholder: "name",
-                    value: formData.name,
-                    onChange: (e) => handleInputChange(e, "name"),
+                    value: formData.full_name,
+                    onChange: (e) => handleInputChange(e, "full_name"),
                     errorKey: "name",
                   },
                   {
@@ -237,8 +237,8 @@ const Login = () => {
                   {
                     type: passType,
                     isPassword: true,
-                    value: formData.pass,
-                    onChange: (e) => handleInputChange(e, "pass"),
+                    value: formData.password,
+                    onChange: (e) => handleInputChange(e, "password"),
                     toggleVisibility: togglePasswordVisibility,
                     errorKey: "pass",
                   },

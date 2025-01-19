@@ -10,7 +10,7 @@ error_reporting(E_ALL);
 header('Content-Type: application/json');
 
 // CORS headers
-header("Access-Control-Allow-Origin: http://localhost:5173"); // Frontend URL, adjust if necessary
+header("Access-Control-Allow-Origin: http://localhost:5173/"); // Frontend URL, adjust if necessary
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
@@ -28,7 +28,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 error_log(print_r($data, true)); // Logs to PHP error log (viewable in XAMPP logs)
 
 if (!$data) {
-    echo json_encode(["success" => false, "message" => "Invalid JSON input"]);
+    echo json_encode(["success" => false, "message" => "data not received"]);
     exit;
 }
 
