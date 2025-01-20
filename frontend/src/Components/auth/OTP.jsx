@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-<<<<<<< HEAD
-import baseApi from "../../Api/baseApi";
-=======
 import { useNavigate, useLocation } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux'; // Import hooks for Redux
 import { startLoading, stopLoading } from '../../redux/loadingSlice'; // Import the actions
 import Spinner from '../Spinner';
 import baseApi from '@/Api/baseApi';
->>>>>>> 71e1f4a465180413cb2e63e5cfbac839c18fcfdb
 
 const OTP = () => {
   const [otp, setOtp] = useState('');
@@ -35,17 +31,6 @@ const OTP = () => {
       return;
     }
 
-<<<<<<< HEAD
-     try {
-      const response = await baseApi.post('functions/verify-otp.php', 
-        { otp }
-      );
-      console.log(typeof otp)
-      if (response.data.success) {
-        setIsSuccess(true);
-        setError('');
-        alert('OTP Verified Successfully!');
-=======
     // Start loading (show spinner)
     dispatch(startLoading());
 
@@ -57,19 +42,12 @@ const OTP = () => {
         setError('');
         alert('OTP Verified Successfully! Please Login to continue');
         navigate('/');
->>>>>>> 71e1f4a465180413cb2e63e5cfbac839c18fcfdb
       } else {
         setError('Invalid OTP. Please try again.');
         setIsSuccess(false);
       }
-<<<<<<< HEAD
-    }
-     catch (error) {
-      setError('Something went wrong. Please try again.');
-=======
     } catch (error) {
       setError(error.message);
->>>>>>> 71e1f4a465180413cb2e63e5cfbac839c18fcfdb
       setIsSuccess(false);
     } finally {
       // Stop loading (hide spinner)
