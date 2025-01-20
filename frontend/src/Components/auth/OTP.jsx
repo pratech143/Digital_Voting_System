@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const OTP = () => {
   const [otp, setOtp] = useState('');
@@ -29,7 +30,8 @@ const OTP = () => {
       if (response.data.status === 'success') {
         setIsSuccess(true);
         setError('');
-        alert('OTP Verified Successfully!');
+        alert('OTP Verified Successfully!Please Login to continue');
+        Navigate("/")
         // Optionally redirect or perform other actions after success
       } else {
         setError('Invalid OTP. Please try again.');

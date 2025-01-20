@@ -108,6 +108,7 @@ const Form = ({
 );
 
 const Login = () => {
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     full_name: "",
@@ -187,6 +188,17 @@ const Login = () => {
   const toggleView = () => setView((prev) => (prev === "register" ? "login" : "register"));
 
   return (
+//     <>
+//     <Tabs defaultValue="Register" className="w-[400px]">
+//   <TabsList>
+//     <TabsTrigger value="Register">Register</TabsTrigger>
+//     <TabsTrigger value="Login">Login</TabsTrigger>
+//   </TabsList>
+//   <TabsContent value="account">Make changes to your account here.</TabsContent>
+//   <TabsContent value="password">Change your password here.</TabsContent>
+// </Tabs>
+
+//     </>
     <div className="flex items-center justify-center h-screen bg-blue-to-white">
       <div className="absolute md:w-[75%] md:h-[85%] border-2 border-gray-300 bg-white rounded-2xl">
         <div className="relative flex flex-col md:flex-row w-full h-full">
@@ -253,6 +265,8 @@ const Login = () => {
                 buttonText="Register"
                 onSubmit={(e) => handleSubmit(e, true)}
               />
+              
+            
             ) : (
               <Form
                 className="order-1"
