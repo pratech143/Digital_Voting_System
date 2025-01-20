@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import baseApi from "../../Api/baseApi";
 
 const OTP = () => {
   const [otp, setOtp] = useState('');
@@ -19,23 +20,21 @@ const OTP = () => {
       return;
     }
 
-    // Send OTP to server for verification using axios
-    try {
-      const response = await axios.post(
-        'http://localhost:30//xampp/htdocs/Voting-System/backend/functions/verify-otp.php', 
+     try {
+      const response = await baseApi.post('functions/verify-otp.php', 
         { otp }
       );
-
-      if (response.data.status === 'success') {
+      console.log(typeof otp)
+      if (response.data.success) {
         setIsSuccess(true);
         setError('');
         alert('OTP Verified Successfully!');
-        // Optionally redirect or perform other actions after success
       } else {
         setError('Invalid OTP. Please try again.');
         setIsSuccess(false);
       }
-    } catch (error) {
+    }
+     catch (error) {
       setError('Something went wrong. Please try again.');
       setIsSuccess(false);
     }

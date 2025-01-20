@@ -9,7 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(["success" => false, "message" => "Invalid JSON input"]);
         exit;
     }
-
+    error_log("Received Email: $email");
+    error_log("Received OTP: $otp");
     $email = $data['email'] ?? null;
     $otp = $data['otp'] ?? null;
 
