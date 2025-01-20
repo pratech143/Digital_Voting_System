@@ -1,11 +1,26 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+<<<<<<< HEAD
 import baseApi from "../../Api/baseApi";
+=======
+import { useNavigate, useLocation } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux'; // Import hooks for Redux
+import { startLoading, stopLoading } from '../../redux/loadingSlice'; // Import the actions
+import Spinner from '../Spinner';
+import baseApi from '@/Api/baseApi';
+>>>>>>> 71e1f4a465180413cb2e63e5cfbac839c18fcfdb
 
 const OTP = () => {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const loading = useSelector((state) => state.loading.isLoading); // Access loading state from Redux
+  const dispatch = useDispatch(); // Hook to dispatch actions
+
+  const location = useLocation();
+  const email = location.state?.email;
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setOtp(e.target.value);
@@ -14,12 +29,13 @@ const OTP = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate OTP (optional)
+    // Validate OTP
     if (!otp.trim()) {
       setError('OTP is required.');
       return;
     }
 
+<<<<<<< HEAD
      try {
       const response = await baseApi.post('functions/verify-otp.php', 
         { otp }
@@ -29,14 +45,35 @@ const OTP = () => {
         setIsSuccess(true);
         setError('');
         alert('OTP Verified Successfully!');
+=======
+    // Start loading (show spinner)
+    dispatch(startLoading());
+
+    try {
+      const response = await baseApi.post(`functions/verify-otp.php`, {email,otp});
+
+      if (response.data.success) {
+        setIsSuccess(true);
+        setError('');
+        alert('OTP Verified Successfully! Please Login to continue');
+        navigate('/');
+>>>>>>> 71e1f4a465180413cb2e63e5cfbac839c18fcfdb
       } else {
         setError('Invalid OTP. Please try again.');
         setIsSuccess(false);
       }
+<<<<<<< HEAD
     }
      catch (error) {
       setError('Something went wrong. Please try again.');
+=======
+    } catch (error) {
+      setError(error.message);
+>>>>>>> 71e1f4a465180413cb2e63e5cfbac839c18fcfdb
       setIsSuccess(false);
+    } finally {
+      // Stop loading (hide spinner)
+      dispatch(stopLoading());
     }
   };
 
@@ -66,9 +103,11 @@ const OTP = () => {
         {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
         {isSuccess && <p className="text-green-500 text-sm text-center mb-4">OTP Verified Successfully!</p>}
 
-        <button type="submit" onClick={handleSubmit} className="w-full py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition duration-200">
+        {/* Show the spinner if loading is true */}
+        {loading && <Spinner size={48} className="mb-4" />}
+
+        <button type="submit" className="w-full py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition duration-200">
           Submit OTP
-          
         </button>
       </form>
     </div>
