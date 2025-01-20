@@ -2,6 +2,9 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import baseApi from "../../Api/baseApi";
+import { useDispatch, useSelector } from 'react-redux'; // Import hooks for Redux
+import { startLoading, stopLoading } from '../../redux/loadingSlice'; // Import the actions
+import Spinner from '../Spinner';
 
 const InputField = ({ type, placeholder, value, onChange, className }) => (
   <input
@@ -110,6 +113,7 @@ const Form = ({
 const Login = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -134,22 +138,23 @@ const Login = () => {
 
   const handleSubmit = async (e, isRegister) => {
     e.preventDefault();
-
+  
     const { full_name, email, password, gender, loginEmail, loginPass } = formData;
     const fieldErrors = {};
-
+  
+    // Input validation
     if (isRegister) {
       if (!full_name.trim()) fieldErrors.name = "Name is required.";
       if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)) fieldErrors.email = "Invalid email address.";
       if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
-        fieldErrors.pass = "Password must be at least 8 characters long and include letters and numbers.";
+        fieldErrors.password = "Password must be at least 8 characters long and include letters and numbers.";
       }
       if (!gender) fieldErrors.gender = "Gender is required.";
     } else {
-      if (!/^\S+@\S+\.\S+$/.test(loginEmail)) fieldErrors.loginEmail = "Invalid email address.";
-      if (!loginPass.trim()) fieldErrors.loginPass = "Password is required.";
+      if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(loginEmail)) fieldErrors.loginEmail = "Invalid email address.";
+      // if (!loginPassword.trim()) fieldErrors.loginPass = "Password is required.";
     }
-
+  
     if (Object.keys(fieldErrors).length > 0) {
       if (isRegister) {
         setError(fieldErrors);
@@ -158,14 +163,16 @@ const Login = () => {
       }
       return;
     }
-
+  
     const endpoint = isRegister ? "register.php" : "login.php";
     const data = isRegister
       ? { full_name, email, password, gender }
-      : { email: loginEmail, pass: loginPass };
-
+      : { email: loginEmail, password: loginPass};
+  
+    // Start loading spinner
+  
     try {
-      const response = await baseApi.post(`public/${endpoint}`, data)
+      const response = await baseApi.post(`public/${endpoint}`, data);
       console.log(response.data);
       if (response.data.status === "exists") {
         setError({ email: "Email is already taken. Please use another email." });
@@ -174,7 +181,7 @@ const Login = () => {
           alert("Logged in Successfully. Redirecting to Dashboard...");
           navigate("/dashboard");
         } else {
-          alert("please verify your email to continue");
+          alert("Please verify your email to continue");
           navigate("/otp", { state: { email } });
         }
       } else {
@@ -188,17 +195,6 @@ const Login = () => {
   const toggleView = () => setView((prev) => (prev === "register" ? "login" : "register"));
 
   return (
-//     <>
-//     <Tabs defaultValue="Register" className="w-[400px]">
-//   <TabsList>
-//     <TabsTrigger value="Register">Register</TabsTrigger>
-//     <TabsTrigger value="Login">Login</TabsTrigger>
-//   </TabsList>
-//   <TabsContent value="account">Make changes to your account here.</TabsContent>
-//   <TabsContent value="password">Change your password here.</TabsContent>
-// </Tabs>
-
-//     </>
     <div className="flex items-center justify-center h-screen bg-blue-to-white">
       <div className="absolute md:w-[75%] md:h-[85%] border-2 border-gray-300 bg-white rounded-2xl">
         <div className="relative flex flex-col md:flex-row w-full h-full">
