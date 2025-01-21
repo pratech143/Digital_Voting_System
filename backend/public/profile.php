@@ -9,8 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $user_id = $_POST['user_id'] ?? ($_SESSION['user_id'] ?? null); //For Testing Only
-        //$user_id = $_SESSION['user_id'] ?? null;
+    //$user_id = $_POST['user_id'] ?? ($_SESSION['user_id'] ?? null); 
+        $user_id = $_SESSION['user_id'] ?? null;
     
         if (!$user_id) {
         echo json_encode(["success" => false, "message" => "User not authenticated"]);
