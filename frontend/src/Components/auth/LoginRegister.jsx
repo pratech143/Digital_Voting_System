@@ -231,7 +231,7 @@ const Login = () => {
                 fields={[
                   {
                     type: "text",
-                    placeholder: "name",
+                    placeholder: "Name",
                     value: formData.full_name,
                     onChange: (e) => handleInputChange(e, "full_name"),
                     errorKey: "name",
