@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 
 const Profile = ({ user, handleVerify }) => {
   return (
@@ -35,12 +36,15 @@ const Profile = ({ user, handleVerify }) => {
         {/* Verify Button */}
         {!user.verified && (
           <div className="text-center">
+            <Link to="/verify">
             <button
               onClick={handleVerify}
               className="w-full mt-4 py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               Verify Now
             </button>
+            </Link>
+            
           </div>
         )}
 

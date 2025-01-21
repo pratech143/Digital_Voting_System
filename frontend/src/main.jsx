@@ -13,6 +13,7 @@ import Home from "./Components/Home/Home";
 import LoginRegister from "./Components/auth/LoginRegister";
 import Header from "./Components/Header/Header"; // Import your Header component
 import Profile from "./Components/routes/Profile";
+import Verify from "./Components/routes/Verify";
 const user = {
   name: "Pratik Chapagain",
   email: "prtkchapagain@gmail.com",
@@ -64,6 +65,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="adashboard" element={<AdminPanel />} />
             <Route path="home" element={<Home user={user} handleLogout={handleLogout} />}/>
             <Route path="profile" element={<Profile user={user}/>} />
+            <Route path="verify" element={<Verify/>}/>
             
           </Route>
         </Routes>

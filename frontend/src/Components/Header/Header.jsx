@@ -1,7 +1,22 @@
 import React from 'react'
 import {Link, NavLink} from 'react-router-dom'
+import baseApi from '@/Api/baseApi';
 
 export default function Header() {
+
+    const handleLogout = async () => {
+        try {
+            const response = await baseApi.post(`login.php`);
+          if (response.ok) {
+            localStorage.removeItem('authToken');  
+            navigate('/');
+          } else {
+            console.error('Failed to log out');
+          }
+        } catch (error) {
+          console.error('Error during logout:', error);
+        }
+      };
     return (
         <header className="shadow sticky z-50 top-0">
             <nav className="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
@@ -23,6 +38,7 @@ export default function Header() {
                         <Link
                             to="#"
                             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none"
+                            onClick={handleLogout}
                         >
                             Logout
                         </Link>
