@@ -1,21 +1,43 @@
 <?php
 
 session_start();
+include 'config/handle_cors.php';
 
-// CORS headers
-header("Access-Control-Allow-Origin:*"); // Frontend URL, adjust if necessary
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Credentials: true");
+// Check if the session exists before attempting to clear it
+if (isset($_SESSION)) {
+    // Clear session variables
+    $_SESSION = [];
 
-// Handle OPTIONS preflight request
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+    // If a session cookie exists, clear it
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(), // Session name
+            '', // Clear the cookie value
+            time() - 3600, // Set expiration in the past
+            $params["path"], // Cookie path
+            $params["domain"], // Cookie domain
+            $params["secure"], // Secure flag
+            $params["httponly"] // HttpOnly flag
+        );
+    }
+
+    // Destroy the session
+    session_destroy();
+
+    // Respond with success
+    echo json_encode([
+        'success' => true,
+        'message' => 'User logged out successfully'
+    ]);
+} else {
+    // Respond with an error if no session exists
+    echo json_encode([
+        'success' => false,
+        'message' => 'No active session to log out from'
+    ]);
 }
 
-session_unset(); // clear session variables
-session_destroy(); // destroy session
-header("Location: login.php");
 exit;
+
 ?>

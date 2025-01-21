@@ -1,9 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from "react-router-dom";
+import baseApi from '../../Api/baseApi';
 
-const Profile = ({ user, handleVerify }) => {
+const Profile = ({ handleVerify }) => {
+  const [user, setUser] = useState(null); // State to hold user data
+  const [loading, setLoading] = useState(true); // For loading state
+  const [error, setError] = useState(null); // For error state
+
+  // Fetch user data from the backend
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await baseApi.post(`public/dashboard.php`, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log(response.data);
+        setUser(response.data); // Store the user data in state
+        setLoading(false);
+      } catch (error) {
+        setError('Error fetching user data');
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []); // Empty dependency array, meaning it runs once when the component mounts
+
+  // If loading, show a spinner
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin border-4 border-t-4 border-blue-600 rounded-full w-16 h-16"></div>
+      </div>
+    );
+  }
+
+  // If error, show the error message
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
+  // If user data is null, return nothing (this should rarely happen due to the above checks)
+  if (!user) return null;
+
+  // If user data is available, render profile
   return (
+    
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        {console.log (user.data)}
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 space-y-6">
         <h2 className="text-center text-3xl font-bold text-gray-900">Your Profile</h2>
 
@@ -12,14 +59,27 @@ const Profile = ({ user, handleVerify }) => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-semibold text-gray-800">Name</h3>
-              <p className="text-gray-600">{user.name}</p>
+              <p className="text-gray-600">{user.data.user_name}</p>
             </div>
           </div>
 
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-semibold text-gray-800">Email</h3>
-              <p className="text-gray-600">{user.email}</p>
+              <p className="text-gray-600">{user.data.email}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800">Role</h3>
+              <p className="text-gray-600">{user.data.role}</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800">User Id</h3>
+              <p className="text-gray-600">{user.data.user_id}</p>
             </div>
           </div>
 
@@ -37,14 +97,13 @@ const Profile = ({ user, handleVerify }) => {
         {!user.verified && (
           <div className="text-center">
             <Link to="/verify">
-            <button
-              onClick={handleVerify}
-              className="w-full mt-4 py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-              Verify Now
-            </button>
+              <button
+                onClick={handleVerify}
+                className="w-full mt-4 py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              >
+                Verify Now
+              </button>
             </Link>
-            
           </div>
         )}
 
