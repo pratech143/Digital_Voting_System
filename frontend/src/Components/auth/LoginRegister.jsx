@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'; // Import hooks for Redu
 import { startLoading, stopLoading } from '../../redux/loadingSlice'; // Import the actions
 import Spinner from '../Spinner';
 
+
 const InputField = ({ type, placeholder, value, onChange, className }) => (
   <input
     type={type}
@@ -64,10 +65,13 @@ const Form = ({
   onSubmit,
   toggleViewText,
   toggleView,
-}) => (
+  loading,
+}
+) => (
   <form className="space-y-4" onSubmit={onSubmit}>
     <h1 className="text-2xl font-semibold mb-4">{title}</h1>
     {error.general && <p className="text-red-700">{error.general}</p>}
+    {console.log(error)}
     {fields.map(({ type, placeholder, value, onChange, isPassword, errorKey, options }, index) => (
       <div key={index} className="space-y-1">
         {isPassword ? (
@@ -96,12 +100,15 @@ const Form = ({
         {error[errorKey] && <p className="text-red-700">{error[errorKey]}</p>}
       </div>
     ))}
+  
     <button
-      type="submit"
-      className="w-[40%] bg-bluish text-white py-3 rounded-lg hover:bg-slate-800 mx-auto"
-    >
-      {buttonText}
-    </button>
+  type="submit"
+  disabled={loading} // Disable the button during loading
+  className={`w-[40%] bg-bluish text-white py-3 rounded-lg hover:bg-slate-800 mx-auto ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+>
+  {loading ? <Spinner size={20} className="inline-block" /> : buttonText}
+</button>
+
     {toggleViewText && (
       <button type="button" onClick={toggleView} className="text-bluish">
         {toggleViewText}
@@ -110,10 +117,13 @@ const Form = ({
   </form>
 );
 
+
 const Login = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.loading.isLoading);
+
   const [formData, setFormData] = useState({
     full_name: "",
     email: "",
@@ -122,7 +132,7 @@ const Login = () => {
     loginEmail: "",
     loginPass: "",
   });
-  const [view, setView] = useState("register");
+  const [view, setView] = useState("login");
   const [error, setError] = useState("");
   const [loginError, setLoginError] = useState("");
   const [passType, setPassType] = useState("password");
@@ -138,10 +148,10 @@ const Login = () => {
 
   const handleSubmit = async (e, isRegister) => {
     e.preventDefault();
-  
+
     const { full_name, email, password, gender, loginEmail, loginPass } = formData;
     const fieldErrors = {};
-  
+
     // Input validation
     if (isRegister) {
       if (!full_name.trim()) fieldErrors.name = "Name is required.";
@@ -152,9 +162,9 @@ const Login = () => {
       if (!gender) fieldErrors.gender = "Gender is required.";
     } else {
       if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(loginEmail)) fieldErrors.loginEmail = "Invalid email address.";
-      // if (!loginPassword.trim()) fieldErrors.loginPass = "Password is required.";
+      if (!loginPass.trim()) fieldErrors.loginPass = "Password is required.";
     }
-  
+
     if (Object.keys(fieldErrors).length > 0) {
       if (isRegister) {
         setError(fieldErrors);
@@ -163,25 +173,26 @@ const Login = () => {
       }
       return;
     }
-  
+
     const endpoint = isRegister ? "register.php" : "login.php";
     const data = isRegister
       ? { full_name, email, password, gender }
-      : { email: loginEmail, password: loginPass};
-  
+      : { email: loginEmail, password: loginPass };
+
     // Start loading spinner
-  
+
+    dispatch(startLoading());
+
     try {
       const response = await baseApi.post(`public/${endpoint}`, data);
       console.log(response.data);
-      if (response.data.status === "exists") {
-        setError({ email: "Email is already taken. Please use another email." });
-      } else if (response.data.success) {
+      console.log(data)
+      if (response.data.success) {
         if (!isRegister) {
-          alert("Logged in Successfully. Redirecting to Dashboard...");
+          
           navigate("/dashboard");
         } else {
-          alert("Please verify your email to continue");
+          
           navigate("/otp", { state: { email } });
         }
       } else {
@@ -189,10 +200,15 @@ const Login = () => {
       }
     } catch {
       setError({ general: "Something went wrong. Please try again." });
+    } finally {
+      // Stop loading spinner\
+
+      dispatch(stopLoading());
     }
   };
 
-  const toggleView = () => setView((prev) => (prev === "register" ? "login" : "register"));
+
+  const toggleView = () => setView((prev) => (prev === "login" ? "register" : "login"));
 
   return (
     <div className="flex items-center justify-center h-screen bg-blue-to-white">
@@ -249,7 +265,7 @@ const Login = () => {
                     value: formData.password,
                     onChange: (e) => handleInputChange(e, "password"),
                     toggleVisibility: togglePasswordVisibility,
-                    errorKey: "pass",
+                    errorKey: "password",
                   },
                   {
                     options: ["Male", "Female", "Other"],
@@ -260,9 +276,13 @@ const Login = () => {
                 ]}
                 buttonText="Register"
                 onSubmit={(e) => handleSubmit(e, true)}
+                loading={loading}
+                
+
               />
-              
-            
+
+
+
             ) : (
               <Form
                 className="order-1"
@@ -273,11 +293,13 @@ const Login = () => {
                     type: "email",
                     placeholder: "Email",
                     value: formData.loginEmail,
+                    errorKey: "loginEmail",
                     onChange: (e) => handleInputChange(e, "loginEmail"),
                   },
                   {
                     type: passType,
                     isPassword: true,
+                    errorKey: "loginPass",
                     value: formData.loginPass,
                     onChange: (e) => handleInputChange(e, "loginPass"),
                     toggleVisibility: togglePasswordVisibility,
@@ -285,6 +307,7 @@ const Login = () => {
                 ]}
                 buttonText="Login"
                 onSubmit={(e) => handleSubmit(e, false)}
+                loading={loading}
               />
             )}
           </div>

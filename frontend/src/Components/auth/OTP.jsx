@@ -35,7 +35,14 @@ const OTP = () => {
     dispatch(startLoading());
 
     try {
-      const response = await baseApi.post(`functions/verify-otp.php`, {email,otp});
+      const response = await baseApi.post('functions/verify-otp.php', { email, otp }, {
+        headers: {
+          'Content-Type': 'application/json',
+        }// Required for cross-origin cookies
+      });
+      console.log(otp);
+      console.log(email)
+      console.log(response.data);
 
       if (response.data.success) {
         setIsSuccess(true);

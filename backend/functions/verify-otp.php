@@ -9,10 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(["success" => false, "message" => "Invalid JSON input"]);
         exit;
     }
-    error_log("Received Email: $email");
-    error_log("Received OTP: $otp");
+
     $email = $data['email'] ?? null;
     $otp = $data['otp'] ?? null;
+    error_log("Received Email: $email");
+    error_log("Received OTP: $otp");
 
     if (!$email || !$otp) {
         echo json_encode(["success" => false, "message" => "Email and OTP are required"]);
