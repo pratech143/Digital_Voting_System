@@ -9,11 +9,20 @@ const AdminPanel = () => {
     "Post-Election": false,
   });
 
+  const [candidates, setCandidates] = useState([]);
+  const [candidateForm, setCandidateForm] = useState({
+    post: "",
+    name: "",
+    party: "",
+    symbol: "",
+  });
+  const [errors, setErrors] = useState({});
+
   const voters = [
     {
       name: "Alice Johnson",
       email: "alice@example.com",
-      documentPhoto: "https://via.placeholder.com/300", // Placeholder for document photo
+      documentPhoto: "https://via.placeholder.com/300",
       age: 30,
       address: "123 Main St, Cityville",
       verified: false,
@@ -26,7 +35,6 @@ const AdminPanel = () => {
       address: "456 Elm St, Townville",
       verified: true,
     },
-    // Add more voters as needed
   ];
 
   const handleAdvanceStage = () => {
@@ -49,11 +57,40 @@ const AdminPanel = () => {
     const currentIndex = stages.indexOf(electionStage);
     const targetIndex = stages.indexOf(stage);
 
-    // Allow advancing to the next stage or accessing the current stage, lock otherwise
-    if (targetIndex === currentIndex + 1 && stageCompleted[electionStage]) {
-      return false;
-    }
     return targetIndex > currentIndex || !stageCompleted[electionStage];
+  };
+
+  const handleCandidateFormChange = (e) => {
+    const { name, value } = e.target;
+    setCandidateForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!candidateForm.post.trim()) newErrors.post = "Post is required.";
+    if (!candidateForm.name.trim()) newErrors.name = "Name is required.";
+    if (!candidateForm.party.trim()) newErrors.party = "Party name is required.";
+    if (!candidateForm.symbol.trim()) newErrors.symbol = "Symbol is required.";
+    return newErrors;
+  };
+
+  const handleAddCandidate = (e) => {
+    e.preventDefault();
+    const formErrors = validateForm();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+    } else {
+      setCandidates((prev) => [...prev, candidateForm]);
+      setCandidateForm({ post: "", name: "", party: "", symbol: "" });
+      setErrors({});
+    }
   };
 
   return (
@@ -140,6 +177,91 @@ const AdminPanel = () => {
                 </div>
               ))}
           </div>
+        </div>
+
+        {/* Add Candidate Section */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-semibold text-gray-700 mb-4">Add Candidate</h2>
+          <form onSubmit={handleAddCandidate} className="space-y-4">
+            <div>
+              <label className="block text-lg font-medium text-gray-700">Post</label>
+              <input
+                type="text"
+                name="post"
+                value={candidateForm.post}
+                onChange={handleCandidateFormChange}
+                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
+                  errors.post
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+                placeholder="Enter post (e.g., Mayor)"
+              />
+              {errors.post && (
+                <p className="text-red-500 text-sm mt-1">{errors.post}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={candidateForm.name}
+                onChange={handleCandidateFormChange}
+                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
+                  errors.name
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+                placeholder="Enter candidate's name"
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700">Party</label>
+              <input
+                type="text"
+                name="party"
+                value={candidateForm.party}
+                onChange={handleCandidateFormChange}
+                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
+                  errors.party
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+                placeholder="Enter party name"
+              />
+              {errors.party && (
+                <p className="text-red-500 text-sm mt-1">{errors.party}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700">Symbol</label>
+              <input
+                type="text"
+                name="symbol"
+                value={candidateForm.symbol}
+                onChange={handleCandidateFormChange}
+                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
+                  errors.symbol
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+                placeholder="Enter party symbol"
+              />
+              {errors.symbol && (
+                <p className="text-red-500 text-sm mt-1">{errors.symbol}</p>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700"
+            >
+              Add Candidate
+            </button>
+          </form>
         </div>
       </div>
     </div>

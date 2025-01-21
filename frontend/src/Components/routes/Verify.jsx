@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { baseApi } from "../../Api/baseApi";
+// import { baseApi } from "../../Api/baseApi";
 
 function VoterVerificationForm() {
   const [formData, setFormData] = useState({
@@ -71,26 +71,26 @@ function VoterVerificationForm() {
       formDataToSend.append("voter_id", formData.voterCard);
       console.log(formDataToSend);
 
-      try {
-        const response = await baseApi.post(`public/verify-voters`,formDataToSend,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
+      // try {
+      //   const response = await baseApi.post(`public/verify-voters`,formDataToSend,
+      //       {
+      //         headers: {
+      //           "Content-Type": "multipart/form-data",
+      //         },
+      //       }
+      //     );
     
           
 
-        if (response.data.success) {
-          setMessage("You will receive mail about verification.");
-        } else {
-          setMessage("Submission failed. Please try again.");
-        }
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        setMessage("An error occurred. Please try again.");
-      }
+      //   if (response.data.success) {
+      //     setMessage("You will receive mail about verification.");
+      //   } else {
+      //     setMessage("Submission failed. Please try again.");
+      //   }
+      // } catch (error) {
+      //   console.error("Error submitting form:", error);
+      //   setMessage("An error occurred. Please try again.");
+      // }
     }
   };
 
