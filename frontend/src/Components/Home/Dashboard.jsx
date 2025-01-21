@@ -136,7 +136,13 @@ const ElectionDashboard = () => {
                 <p className="text-center text-2xl text-gray-500 py-28">Graph Placeholder</p>
               </div>
             </div>
-          
+            <div className="bg-white p-8 rounded-xl shadow-lg">
+              <h3 className="text-xl font-semibold text-gray-600">Votes by Age Group</h3>
+              <div className="h-64 bg-gray-200 rounded-xl mt-4">
+                {/* Placeholder for graph */}
+                <p className="text-center text-2xl text-gray-500 py-28">Graph Placeholder</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

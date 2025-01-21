@@ -1,17 +1,18 @@
 import "./index.css";
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Provider } from 'react-redux';  
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Provider } from "react-redux";
 import store from "./redux/Store";
-
-import App from './App';  
+import AdminPanel from "./Components/admin/AdminDashboard.jsx";
+import App from "./App";
 import Dashboard from "./Components/Home/Dashboard";
 import OTP from "./Components/auth/OTP";
 import Candidates from "./Components/Home/Candidates";
 import Home from "./Components/Home/Home";
 import LoginRegister from "./Components/auth/LoginRegister";
-
+import Header from "./Components/Header/Header"; // Import your Header component
+import Profile from "./Components/routes/Profile";
 const user = {
   name: "Pratik Chapagain",
   email: "prtkchapagain@gmail.com",
@@ -28,21 +29,45 @@ const elections = [
 
 const handleLogout = () => {
   console.log("Logging out...");
-  // Add logout functionality
 };
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <Provider store={store}> 
+const AppWithHeader = ({ children }) => {
+  const location = useLocation();
+  const excludeHeaderRoutes = ["/", "/otp"];
+  const shouldShowHeader = !excludeHeaderRoutes.includes(location.pathname);
+
+  return (
+    <>
+      {shouldShowHeader && <Header />}
+      {children}
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <Provider store={store}>
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route index element={<LoginRegister />} />
-          <Route path="candidates" element={<Candidates />} />
-          <Route path="dashboard" element={<Dashboard user={user} votingStatus={false} elections={elections} handleLogout={handleLogout} />} />
-          <Route path="otp" element={<OTP />} />
-          <Route path="home" element={<Home user={user} handleLogout={handleLogout} />} />
-        </Route>
-      </Routes>
+      <AppWithHeader>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<LoginRegister />} />
+            <Route path="otp" element={<OTP />} />
+            <Route
+              path="dashboard"
+              element={
+                <Dashboard
+                  
+                />
+              }
+            />
+            <Route path="candidates" element={<Candidates />} />
+            <Route path="adashboard" element={<AdminPanel />} />
+            <Route path="home" element={<Home user={user} handleLogout={handleLogout} />}/>
+            <Route path="profile" element={<Profile user={user}/>} />
+            
+          </Route>
+        </Routes>
+      </AppWithHeader>
     </BrowserRouter>
   </Provider>
 );
