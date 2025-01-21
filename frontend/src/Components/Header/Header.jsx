@@ -1,20 +1,22 @@
 import React from 'react'
 import {Link, NavLink} from 'react-router-dom'
 import baseApi from '@/Api/baseApi';
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
+    const navigate=useNavigate();
 
     const handleLogout = async () => {
         try {
-            const response = await baseApi.post(`login.php`);
-          if (response.ok) {
-            localStorage.removeItem('authToken');  
+            const response = await baseApi.post(`logout.php`);
+            console.log(response.data);
+          if (response.data.success) {
             navigate('/');
           } else {
-            console.error('Failed to log out');
+            console.log('Failed to log out');
           }
         } catch (error) {
-          console.error('Error during logout:', error);
+          console.log(error);
         }
       };
     return (
@@ -35,13 +37,13 @@ export default function Header() {
                         >
                             Log in
                         </Link> */}
-                        <Link
-                            to="#"
+                        <button
+                            
                             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none"
                             onClick={handleLogout}
                         >
                             Logout
-                        </Link>
+                        </button>
                     </div>
                     <div
                         className="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1"

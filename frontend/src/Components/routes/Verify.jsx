@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-// import { baseApi } from "../../Api/baseApi";
+import baseApi from "../../Api/baseApi";
 
 function VoterVerificationForm() {
   const [formData, setFormData] = useState({
@@ -8,6 +8,7 @@ function VoterVerificationForm() {
     municipalityName: "",
     wardNumber: "",
     voterCard: null,
+    userId:"",
   });
 
   const [errors, setErrors] = useState({});
@@ -44,6 +45,12 @@ function VoterVerificationForm() {
       newErrors.wardNumber = "Ward number must be a positive number.";
     }
 
+    if (!formData.userId) {
+      newErrors.userId = "user id is required.";
+    } else if (!/^[1-9][0-9]*$/.test(formData.userId)) {
+      newErrors.userId = "user id must be a positive number.";
+    }
+
     // Voter Card validation (must be an image file)
     if (!formData.voterCard) {
       newErrors.voterCard = "Please upload your voter card.";
@@ -67,30 +74,33 @@ function VoterVerificationForm() {
       const formDataToSend = new FormData();
       formDataToSend.append("location_type", formData.vdcOrMunicipality);
       formDataToSend.append("location_name", formData.municipalityName);
-      formDataToSend.append("ward_Number", formData.wardNumber);
-      formDataToSend.append("voter_id", formData.voterCard);
+      formDataToSend.append("ward_number", formData.wardNumber);
+      formDataToSend.append("voter_id_image", formData.voterCard);
+      formDataToSend.append("user_id", formData.userId);
+      formDataToSend.append("role", "voter");
       console.log(formDataToSend);
+      console.log(formData.voterCard);
 
-      // try {
-      //   const response = await baseApi.post(`public/verify-voters`,formDataToSend,
-      //       {
-      //         headers: {
-      //           "Content-Type": "multipart/form-data",
-      //         },
-      //       }
-      //     );
-    
-          
+      try {
+        const response = await baseApi.post(`public/profile.php`, formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
-      //   if (response.data.success) {
-      //     setMessage("You will receive mail about verification.");
-      //   } else {
-      //     setMessage("Submission failed. Please try again.");
-      //   }
-      // } catch (error) {
-      //   console.error("Error submitting form:", error);
-      //   setMessage("An error occurred. Please try again.");
-      // }
+
+
+        if (response.data.success) {
+          setMessage("You will receive mail about verification.");
+        } else {
+          setMessage(response.data.message);
+        }
+      } catch (error) {
+        console.log("Error submitting form:", error);
+        setMessage("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -109,21 +119,22 @@ function VoterVerificationForm() {
           {/* VDC or Municipality */}
           <div>
             <label className="block text-lg font-medium text-gray-700 mb-2">
-              Select VDC or Municipality
+              Choose Local level
             </label>
             <select
               name="vdcOrMunicipality"
               value={formData.vdcOrMunicipality}
               onChange={handleChange}
-              className={`block w-full px-4 py-3 border ${
-                errors.vdcOrMunicipality
+              className={`block w-full px-4 py-3 border ${errors.vdcOrMunicipality
                   ? "border-red-500"
                   : "border-gray-300"
-              } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700`}
+                } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700`}
             >
               <option value="">Choose an option</option>
               <option value="VDC">VDC</option>
               <option value="Municipality">Municipality</option>
+              <option value="Sub-Metropolitian City">Sub-Metropolitian City</option>
+              <option value="Metropolitian City">Metropolitian City</option>
             </select>
             {errors.vdcOrMunicipality && (
               <p className="text-red-500 text-sm mt-2">
@@ -143,9 +154,8 @@ function VoterVerificationForm() {
               value={formData.municipalityName}
               onChange={handleChange}
               placeholder="Enter municipality name"
-              className={`block w-full px-4 py-3 border ${
-                errors.municipalityName ? "border-red-500" : "border-gray-300"
-              } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700`}
+              className={`block w-full px-4 py-3 border ${errors.municipalityName ? "border-red-500" : "border-gray-300"
+                } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700`}
             />
             {errors.municipalityName && (
               <p className="text-red-500 text-sm mt-2">
@@ -165,12 +175,29 @@ function VoterVerificationForm() {
               value={formData.wardNumber}
               onChange={handleChange}
               placeholder="Enter ward number"
-              className={`block w-full px-4 py-3 border ${
-                errors.wardNumber ? "border-red-500" : "border-gray-300"
-              } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700`}
+              className={`block w-full px-4 py-3 border ${errors.wardNumber ? "border-red-500" : "border-gray-300"
+                } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700`}
             />
             {errors.wardNumber && (
               <p className="text-red-500 text-sm mt-2">{errors.wardNumber}</p>
+            )}
+          </div>
+          {/* user id*/}
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">
+              user Id
+            </label>
+            <input
+              type="number"
+              name="userId"
+              value={formData.userId}
+              onChange={handleChange}
+              placeholder="Enter userId"
+              className={`block w-full px-4 py-3 border ${errors.userId ? "border-red-500" : "border-gray-300"
+                } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700`}
+            />
+            {errors.userId && (
+              <p className="text-red-500 text-sm mt-2">{errors.userId}</p>
             )}
           </div>
 
@@ -184,14 +211,22 @@ function VoterVerificationForm() {
               name="voterCard"
               onChange={handleChange}
               accept="image/*"
-              className={`block w-full px-4 py-3 ${
-                errors.voterCard ? "border-red-500" : "border-gray-300"
-              } text-gray-700 bg-gray-50 border rounded-lg shadow-sm focus:outline-none`}
+              className={`block w-full px-4 py-3 ${errors.voterCard ? "border-red-500" : "border-gray-300"
+                } text-gray-700 bg-gray-50 border rounded-lg shadow-sm focus:outline-none`}
             />
             {errors.voterCard && (
               <p className="text-red-500 text-sm mt-2">{errors.voterCard}</p>
             )}
           </div>
+
+          <input
+            type="text"
+            name="role"
+            value="voter" readOnly
+
+            className={`block w-full px-4 py-3 border ${errors.municipalityName ? "border-red-500" : "border-gray-300"
+              } rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700`}
+          />
 
           {/* Submit Button */}
           <div className="text-center">
