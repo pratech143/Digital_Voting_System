@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['user_id'] = $user['user_id'];
     $_SESSION['user_name'] = $user['full_name'];
     $_SESSION['user_role'] = $user['role'];
-
+    
     echo json_encode([
         "success" => true,
         "message" => "Login successful",
