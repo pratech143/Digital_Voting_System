@@ -15,9 +15,10 @@ const Profile = ({ handleVerify }) => {
             "Content-Type": "multipart/form-data",
           },
         });
-        console.log(response.data);
         setUser(response.data); 
+        console.log(user)
         setLoading(false);
+        console.log(response);
       } catch (error) {
         setError('Error fetching user data');
         setLoading(false);

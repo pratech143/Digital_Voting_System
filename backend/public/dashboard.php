@@ -3,8 +3,6 @@ session_start();
 header('Content-Type: application/json');
 
 // Include database configuration
-ini_set('session.cookie_lifetime', 86400); // 1 day
-ini_set('session.gc_maxlifetime', 86400);
 include '../config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
