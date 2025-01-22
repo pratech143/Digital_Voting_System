@@ -1,6 +1,6 @@
 <?php
 $allowed_origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($allowed_origin, ['http://localhost:5173','http://localhost:5174'])) {
+if (in_array($allowed_origin, ['http://localhost:5173'])) {
     header('Access-Control-Allow-Origin: ' . $allowed_origin);
     header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
