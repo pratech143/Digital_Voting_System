@@ -78,9 +78,6 @@ function VoterVerificationForm() {
       formDataToSend.append("voter_id_image", formData.voterCard);
       formDataToSend.append("user_id", formData.userId);
       formDataToSend.append("role", "voter");
-      console.log(formDataToSend);
-      console.log(formData.voterCard);
-
       try {
         const response = await baseApi.post(`public/profile.php`, formDataToSend,
           {
@@ -94,6 +91,13 @@ function VoterVerificationForm() {
 
         if (response.data.success) {
           setMessage("You will receive mail about verification.");
+          setFormData({
+            vdcOrMunicipality: "",
+            municipalityName: "",
+            wardNumber: "",
+            voterCard: null,
+            userId: "",
+          });
         } else {
           setMessage(response.data.message);
         }
@@ -146,7 +150,7 @@ function VoterVerificationForm() {
           {/* Municipality Name */}
           <div>
             <label className="block text-lg font-medium text-gray-700 mb-2">
-              Municipality/VDC Name
+              Local level Name
             </label>
             <input
               type="text"

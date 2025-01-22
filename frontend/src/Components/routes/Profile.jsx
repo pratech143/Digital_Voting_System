@@ -4,11 +4,9 @@ import { Link } from "react-router-dom";
 import baseApi from '../../Api/baseApi';
 
 const Profile = ({ handleVerify }) => {
-  const [user, setUser] = useState(null); // State to hold user data
-  const [loading, setLoading] = useState(true); // For loading state
-  const [error, setError] = useState(null); // For error state
-
-  // Fetch user data from the backend
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -18,7 +16,7 @@ const Profile = ({ handleVerify }) => {
           },
         });
         console.log(response.data);
-        setUser(response.data); // Store the user data in state
+        setUser(response.data); 
         setLoading(false);
       } catch (error) {
         setError('Error fetching user data');
@@ -27,9 +25,7 @@ const Profile = ({ handleVerify }) => {
     };
 
     fetchUserData();
-  }, []); // Empty dependency array, meaning it runs once when the component mounts
-
-  // If loading, show a spinner
+  }, []);
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -37,16 +33,10 @@ const Profile = ({ handleVerify }) => {
       </div>
     );
   }
-
-  // If error, show the error message
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
-
-  // If user data is null, return nothing (this should rarely happen due to the above checks)
   if (!user) return null;
-
-  // If user data is available, render profile
   return (
     
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

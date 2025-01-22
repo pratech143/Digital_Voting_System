@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
+import baseApi from "../../Api/baseApi";
 
 const AdminPanel = () => {
   const [electionStage, setElectionStage] = useState("Pre-Election"); // Default stage
@@ -72,6 +73,26 @@ const AdminPanel = () => {
     }));
   };
 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await baseApi.get(`admin/manage_voters.php`);
+        if (response.data.success) {
+          console.log(response.data);
+          // Process and set the data here
+        }
+      } catch (error) {
+        console.log('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
+  
   const validateForm = () => {
     const newErrors = {};
     if (!candidateForm.post.trim()) newErrors.post = "Post is required.";
