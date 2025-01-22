@@ -31,7 +31,6 @@ if (in_array($allowed_origin, $allowed_domains)) {
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, Authorization');
-    header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Max-Age: 86400'); // Cache the preflight response for 1 day
     http_response_code(200);
     exit();

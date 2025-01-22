@@ -26,12 +26,7 @@ echo json_encode([
     'data' => [
         'user_id' => $user_id,
         'user_name' => $user_name,
-<<<<<<< HEAD
-        'role' =>$role,
-    ]
-=======
         'role' => $role,
     ],
->>>>>>> e2eedea016960444bf3359dd6a3959f15bd6a05c
 ]);
 ?>
