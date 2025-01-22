@@ -2,7 +2,6 @@
 session_start();
 header('Content-Type: application/json');
 
-// Include database configuration
 include '../config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -16,7 +15,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 try {
-    // Fetch user details from the database
+
     $stmt = $conn->prepare("SELECT user_id, full_name, role, email FROM users WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
@@ -24,8 +23,6 @@ try {
 
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
-
-        // Send JSON response
         echo json_encode([
             'success' => true,
             'data' => [
