@@ -11,6 +11,7 @@ export default function Header() {
             const response = await baseApi.post(`logout.php`);
             console.log(response.data);
           if (response.data.success) {
+            localStorage.removeItem('userRole');
             navigate('/');
           } else {
             console.log('Failed to log out');

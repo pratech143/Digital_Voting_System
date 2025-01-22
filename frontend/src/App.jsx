@@ -25,21 +25,24 @@ const elections = [
 ];
 
 const handleLogout = () => {
-  console.log("Logging out...");
+  // Remove the role from localStorage on logout
+  localStorage.removeItem("userRole");
+  setRole(null); // Update the state of the role to trigger re-render
 };
 
 const App = () => {
 
-  const role = localStorage.getItem('userRole');
-  const isAdmin = role === 'admin' ? true : false;
 
   return (
     <Routes>
       <Route element={<Layout />}>
-        {/* Redirect to admin panel if the user is admin */}
-        <Route path="/" element= {<LoginRegister/> }/>
+        {/* If user is not logged in, go to login page */}
+        <Route
+          path="/"
+          element={<LoginRegister />}
+        />
         <Route path="otp" element={<OTP />} />
-        <Route path="dashboard" element={isAdmin ? <Navigate to="/adashboard" /> :<Dashboard />} />
+        <Route path="dashboard" element={ <Dashboard />} />
         <Route path="candidates" element={<Candidates />} />
 
         {/* Admin Panel Route */}

@@ -189,8 +189,11 @@ const Login = () => {
       
       if (response.data.success) {
         if (!isRegister) {
-          localStorage.setItem('userRole', response.data.user.role); // Storing role in local storage
-          navigate("/dashboard");
+          if(response.data.user.role=="admin"){
+          navigate("/adashboard");
+          }else{
+            navigate("/dashboard")
+          }
         } else {
           
           navigate("/otp", { state: { email } });
@@ -227,7 +230,7 @@ const Login = () => {
               </button>
             </div>
           ) : (
-            <div className="flex-1 order-2 bg-bluish text-white flex flex-col items-center justify-center p-6 border-gray-300 rounded-2xl rounded-bl-[25%] md:rounded-br-none rounded-br-[15%] md:rounded-tl-[25%]">
+            <div className="flex-1 md:order-2 bg-bluish text-white flex flex-col items-center justify-center p-6 border-gray-300 rounded-2xl rounded-bl-[25%] md:rounded-br-none rounded-br-[15%] md:rounded-tl-[25%]">
               <img src="/images/logo.png" alt="Logo" className="w-64 mb-6" />
               <h1 className="text-4xl font-semibold mb-4">Welcome Back to e-मत</h1>
               <p className="text-lg">Don't have an account?</p>
