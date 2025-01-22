@@ -74,18 +74,18 @@ const Profile = ({ handleVerify }) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          {user.data.role!="admin" &&<div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-semibold text-gray-800">Verification Status</h3>
               <p className={`text-gray-600 ${user.verified ? 'text-green-500' : 'text-red-500'}`}>
                 {user.verified ? 'Verified' : 'Not Verified'}
               </p>
             </div>
-          </div>
+          </div>}
         </div>
 
         {/* Verify Button */}
-        {!user.verified && (
+        {(!user.verified && user.data.role!="admin") && (
           <div className="text-center">
             <Link to="/verify">
               <button
@@ -98,21 +98,7 @@ const Profile = ({ handleVerify }) => {
           </div>
         )}
 
-        {/* Additional Action Section */}
-        <div className="flex items-center justify-center space-x-4 mt-6">
-          <button
-            onClick={() => alert('Change Profile functionality here')}
-            className="py-2 px-4 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 focus:outline-none"
-          >
-            Change Profile Picture
-          </button>
-          <button
-            onClick={() => alert('Log out functionality here')}
-            className="py-2 px-4 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 focus:outline-none"
-          >
-            Log Out
-          </button>
-        </div>
+      
       </div>
     </div>
   );
