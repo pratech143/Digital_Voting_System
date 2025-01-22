@@ -24,7 +24,7 @@ echo json_encode([
     'success' => true,
     'data' => [
         'user_id' => $user_id,
-        'user_name' => htmlspecialchars($user_name, ENT_QUOTES, 'UTF-8'),
-        'role' => htmlspecialchars($role, ENT_QUOTES, 'UTF-8'),
+        'user_name' => $user_name,
+        'role' =>$role,
     ]
 ]);
