@@ -185,11 +185,11 @@ const Login = () => {
 
     try {
       const response = await baseApi.post(`public/${endpoint}`, data);
-      console.log(response.data);
-      console.log(data)
+      console.log(response.data.user.role);
+      
       if (response.data.success) {
         if (!isRegister) {
-          
+          localStorage.setItem('userRole', response.data.user.role); // Storing role in local storage
           navigate("/dashboard");
         } else {
           

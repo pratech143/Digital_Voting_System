@@ -261,7 +261,7 @@ const AdminPanel = () => {
             <div>
               <label className="block text-lg font-medium text-gray-700">Symbol</label>
               <input
-                type="text"
+                type="file"
                 name="symbol"
                 value={candidateForm.symbol}
                 onChange={handleCandidateFormChange}
