@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import baseApi from "../../Api/baseApi";
 
 const AdminPanel = () => {
@@ -18,25 +18,8 @@ const AdminPanel = () => {
     symbol: "",
   });
   const [errors, setErrors] = useState({});
-
-  const voters = [
-    {
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      documentPhoto: "https://via.placeholder.com/300",
-      age: 30,
-      address: "123 Main St, Cityville",
-      verified: false,
-    },
-    {
-      name: "Bob Brown",
-      email: "bob@example.com",
-      documentPhoto: "https://via.placeholder.com/300",
-      age: 45,
-      address: "456 Elm St, Townville",
-      verified: true,
-    },
-  ];
+  const [voters, setVoters] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleAdvanceStage = () => {
     if (electionStage === "Pre-Election") {
@@ -73,26 +56,24 @@ const AdminPanel = () => {
     }));
   };
 
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchVotersData = async () => {
       try {
         const response = await baseApi.get(`admin/manage_voters.php`);
+        console.log(response.data)
         if (response.data.success) {
-          console.log(response.data);
-          // Process and set the data here
+          setVoters(response.data.voters || ["success"]);
         }
       } catch (error) {
-        console.log('Error fetching user data:', error);
+        console.log("Error fetching voter data:", error);
       } finally {
         setLoading(false);
       }
     };
-  
-    fetchUserData();
+
+    fetchVotersData();
   }, []);
-  
+
   const validateForm = () => {
     const newErrors = {};
     if (!candidateForm.post.trim()) newErrors.post = "Post is required.";
@@ -167,37 +148,52 @@ const AdminPanel = () => {
         {/* Verify Voters Section */}
         <div className="mb-12">
           <h2 className="text-3xl font-semibold text-gray-700 mb-4">Verify Voters</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {voters
-              .filter((voter) =>
-                voter.name.toLowerCase().includes(search.toLowerCase())
-              )
-              .map((voter, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-6 rounded-xl shadow-lg flex flex-col space-y-4"
-                >
-                  <img
-                    src={voter.documentPhoto}
-                    alt={`${voter.name}'s document`}
-                    className="w-full h-40 object-cover rounded-lg border-2 border-blue-500"
-                  />
-                  <div className="text-center">
-                    <h3 className="text-xl font-semibold text-gray-800">{voter.name}</h3>
-                    <p className="text-gray-600">Email: {voter.email}</p>
-                    <p className="text-gray-600">Age: {voter.age}</p>
-                    <p className="text-gray-600">Address: {voter.address}</p>
-                  </div>
-                  <button
-                    className={`w-full py-2 rounded-full text-white ${
-                      voter.verified ? "bg-green-500" : "bg-red-500"
-                    }`}
+          {loading ? (
+            <div className="flex justify-center items-center min-h-[200px]">
+              <p className="text-lg font-semibold text-gray-700">Loading voters...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {voters
+                .filter((voter) =>
+                  voter.full_name.toLowerCase().includes(search.toLowerCase())
+                )
+                .map((voter, index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-6 rounded-xl shadow-lg flex flex-col space-y-4"
                   >
-                    {voter.verified ? "Verified" : "Verify"}
-                  </button>
-                </div>
-              ))}
-          </div>
+                    <img
+                      src={voter.voter_id_image_path}
+                      
+                      alt={`${voter.full_name}'s document`}
+                      className="w-full h-40 object-cover rounded-lg border-2 border-blue-500"
+                    />
+                    <div className="text-center">
+                    <p>{voter.voter_id_image_path}</p>
+                      <h3 className="text-xl font-semibold text-gray-800">{voter.full_name}</h3>
+                      <p className="text-gray-600">Email: {voter.email}</p>
+                      <p className="text-gray-600">user Id: {voter.user_id}</p>
+                      <p className="text-gray-600">Address: {voter.location_name}- {voter.ward_number}</p>
+                    </div>
+                    <button
+                      className={`w-full py-2 rounded-full text-white ${
+                        voter.verified ? "bg-green-500" : "bg-green-500"
+                      }`}
+                    >
+                      {voter.verified ? "Verified" : "Verify"}
+                    </button>
+                    <button
+                      className={`w-full py-2 rounded-full text-white ${
+                        voter.verified ? "bg-green-500" : "bg-red-500"
+                      }`}
+                    >
+                      {voter.rejected ? "rejected" : "Reject"}
+                    </button>
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
 
         {/* Add Candidate Section */}
