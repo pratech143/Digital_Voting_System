@@ -3,7 +3,7 @@ session_start();
 header('Content-Type: application/json');
 include '../config/database.php';
 
-if ($_SESSION['user_role'] !== 'candidate') {
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'candidate') {
     echo json_encode(["success" => false, "message" => "Unauthorized access."]);
     exit;
 }
