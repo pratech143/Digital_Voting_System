@@ -9,6 +9,8 @@ if ($_SESSION['role'] !== 'admin') {
     exit;
 }
 
+
+
 // Handle GET request to fetch the list of pending voters
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {

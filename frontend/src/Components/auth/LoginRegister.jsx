@@ -185,7 +185,7 @@ const Login = () => {
 
     try {
       const response = await baseApi.post(`public/${endpoint}`, data);
-      console.log(response.data.user.role);
+      
       
       if (response.data.success) {
         if (!isRegister) {
@@ -201,8 +201,8 @@ const Login = () => {
       } else {
         setError({ general: response.data.message });
       }
-    } catch {
-      setError({ general: "Something went wrong. Please try again." });
+    } catch(error) {
+      setError({ general: "something went wrong.Please try again"});
     } finally {
       // Stop loading spinner\
 
