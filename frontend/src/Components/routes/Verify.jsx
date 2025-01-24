@@ -78,17 +78,19 @@ function VoterVerificationForm() {
       formDataToSend.append("voter_id_image", formData.voterCard);
       formDataToSend.append("user_id", formData.userId);
       formDataToSend.append("role", "voter");
+      console.log(formDataToSend)
+      console.log("voterCard file:", formData.voterCard);
+
       try {
-        const response = await baseApi.post(`public/profile.php`, formDataToSend,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+        const response = await baseApi.post(`public/profile.php`, formDataToSend,{
+          headers:{
+            'Content-Type': 'multipart/form-data',
+        }}
         );
+        console.log(response.data)
 
 
-
+        console.log("clicked")
         if (response.data.success) {
           setMessage("You will receive mail about verification.");
           setFormData({
@@ -98,7 +100,7 @@ function VoterVerificationForm() {
             voterCard: null,
             userId: "",
           });
-        } else {
+        } else{
           setMessage(response.data.message);
         }
       } catch (error) {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import baseApi from "../../Api/baseApi";
+import VoterList from "./VoterList";
 
-const AdminPanel = () => {
+const AdminDashboard = () => {
   const [electionStage, setElectionStage] = useState("Pre-Election"); // Default stage
   const [search, setSearch] = useState("");
   const [stageCompleted, setStageCompleted] = useState({
@@ -21,6 +22,22 @@ const AdminPanel = () => {
   const [voters, setVoters] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // State for modal image
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+
+  // Function to handle image click
+  const handleImageClick = (imageSrc) => {
+    setSelectedImage(imageSrc);
+    setImageModalOpen(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setImageModalOpen(false);
+    setSelectedImage("");
+  };
+
   const handleAdvanceStage = () => {
     if (electionStage === "Pre-Election") {
       setElectionStage("During Election");
@@ -28,6 +45,7 @@ const AdminPanel = () => {
       setElectionStage("Post-Election");
     }
   };
+
   const handleApproval = async (userId) => {
     try {
       const response = await baseApi.post(`admin/manage_voters.php`, {
@@ -36,14 +54,16 @@ const AdminPanel = () => {
       });
 
       if (response.data.success) {
-        console.log(response.data)
+        // console.log(response.data);
       } else {
         console.error("Failed to approve voter:", response.data.message);
+        
       }
     } catch (error) {
       console.error("Error approving voter:", error);
     }
   };
+
   const handleRejection = async (userId) => {
     try {
       const response = await baseApi.post(`admin/manage_voters.php`, {
@@ -52,7 +72,7 @@ const AdminPanel = () => {
       });
 
       if (response.data.success) {
-        console.log(response.data)
+        // console.log(response.data);
       } else {
         console.error("Failed to approve voter:", response.data.message);
       }
@@ -92,12 +112,12 @@ const AdminPanel = () => {
     const fetchVotersData = async () => {
       try {
         const response = await baseApi.get(`admin/manage_voters.php`);
-        console.log(response.data)
+        // console.log(response.data);
         if (response.data.success) {
           setVoters(response.data.voters || ["success"]);
         }
       } catch (error) {
-        console.log("Error fetching voter data:", error);
+        // console.log("Error fetching voter data:", error);
       } finally {
         setLoading(false);
       }
@@ -153,6 +173,28 @@ const AdminPanel = () => {
 
   return (
     <div className="bg-gradient-to-r from-blue-50 to-blue-200 min-h-screen font-sans p-8">
+      {/* Modal to display the full image */}
+      {imageModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+          onClick={closeModal}
+        >
+          <div className="relative bg-white p-4 rounded-lg">
+            <img
+              src={selectedImage}
+              alt="Full view"
+              className="w-auto h-auto max-w-[90%] max-h-[80vh] object-contain"
+            />
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-white bg-gray-800 p-2 rounded-full"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-screen-xl mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
@@ -180,10 +222,10 @@ const AdminPanel = () => {
                 disabled={isStageLocked(stage)}
                 onClick={() => setElectionStage(stage)}
                 className={`px-6 py-3 rounded-full font-semibold ${isStageLocked(stage)
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : electionStage === stage
-                      ? "bg-blue-600 text-white"
-                      : "bg-blue-400 text-white"
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : electionStage === stage
+                    ? "bg-blue-600 text-white"
+                    : "bg-blue-400 text-white"
                   }`}
               >
                 {stage}
@@ -219,120 +261,85 @@ const AdminPanel = () => {
                     className="bg-white p-6 rounded-xl shadow-lg flex flex-col space-y-4"
                   >
                     <img
-                      src={voter.voter_id_image_path}
-
+                      src={`data:image/jpeg/jpg;base64,${voter.voter_id_image}`}
                       alt={`${voter.full_name}'s document`}
-                      className="w-full h-40 object-cover rounded-lg border-2 border-blue-500"
+                      className="w-full h-40 object-cover rounded-lg border-2 border-blue-500 cursor-pointer"
+                      onClick={() => handleImageClick(`data:image/jpeg;base64,${voter.voter_id_image}`)} // On click, open modal
                     />
+
                     <div className="text-center">
-                      <p>{voter.voter_id_image_path}</p>
                       <h3 className="text-xl font-semibold text-gray-800">{voter.full_name}</h3>
                       <p className="text-gray-600">Email: {voter.email}</p>
                       <p className="text-gray-600">user Id: {voter.user_id}</p>
-                      <p className="text-gray-600">Address: {voter.location_name}- {voter.ward_number}</p>
+                      <div className="flex justify-center space-x-4 mt-4">
+                        <button
+                          onClick={() => handleApproval(voter.user_id)}
+                          className="px-4 py-2 bg-green-500 text-white rounded-lg"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleRejection(voter.user_id)}
+                          className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                        >
+                          Reject
+                        </button>
+                      </div>
                     </div>
-
-                    {!voter.rejected && (
-                      <button
-                        onClick={() => handleApproval(voter.user_id)} // Wrap function in an arrow function
-                        className="w-full py-2 rounded-full text-white bg-green-500"
-                      >
-                        {voter.verified ? "Verified" : "Verify"}
-                      </button>
-                    )}
-                    {!voter.verified && (
-                      <button
-                        onClick={() => handleRejection(voter.user_id)} // Wrap function in an arrow function
-                        className="w-full py-2 rounded-full text-white bg-red-500"
-                      >
-                        {voter.rejected ? "Rejected" : "Reject"}
-                      </button>
-                    )}
-
                   </div>
                 ))}
             </div>
           )}
         </div>
 
+<VoterList/>
         {/* Add Candidate Section */}
         <div className="mb-12">
           <h2 className="text-3xl font-semibold text-gray-700 mb-4">Add Candidate</h2>
-          <form onSubmit={handleAddCandidate} className="space-y-4">
-            <div>
-              <label className="block text-lg font-medium text-gray-700">Post</label>
-              <input
-                type="text"
-                name="post"
-                value={candidateForm.post}
-                onChange={handleCandidateFormChange}
-                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${errors.post
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500"
-                  }`}
-                placeholder="Enter post (e.g., Mayor)"
-              />
-              {errors.post && (
-                <p className="text-red-500 text-sm mt-1">{errors.post}</p>
-              )}
+          <form
+            onSubmit={handleAddCandidate}
+            className="space-y-6 p-6 bg-white rounded-xl shadow-lg"
+          >
+            <input
+              type="text"
+              name="post"
+              value={candidateForm.post}
+              onChange={handleCandidateFormChange}
+              placeholder="Post"
+              className="w-full p-3 border border-gray-300 rounded-md"
+            />
+            <input
+              type="text"
+              name="name"
+              value={candidateForm.name}
+              onChange={handleCandidateFormChange}
+              placeholder="Candidate Name"
+              className="w-full p-3 border border-gray-300 rounded-md"
+            />
+            <input
+              type="text"
+              name="party"
+              value={candidateForm.party}
+              onChange={handleCandidateFormChange}
+              placeholder="Party"
+              className="w-full p-3 border border-gray-300 rounded-md"
+            />
+            <input
+              type="file"
+              name="symbol"
+              value={candidateForm.symbol}
+              onChange={handleCandidateFormChange}
+              placeholder="Symbol"
+              className="w-full p-3 border border-gray-300 rounded-md"
+            />
+            <div className="flex justify-between items-center">
+              <button
+                type="submit"
+                className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg"
+              >
+                Add Candidate
+              </button>
             </div>
-            <div>
-              <label className="block text-lg font-medium text-gray-700">Name</label>
-              <input
-                type="text"
-                name="name"
-                value={candidateForm.name}
-                onChange={handleCandidateFormChange}
-                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${errors.name
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500"
-                  }`}
-                placeholder="Enter candidate's name"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-lg font-medium text-gray-700">Party</label>
-              <input
-                type="text"
-                name="party"
-                value={candidateForm.party}
-                onChange={handleCandidateFormChange}
-                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${errors.party
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500"
-                  }`}
-                placeholder="Enter party name"
-              />
-              {errors.party && (
-                <p className="text-red-500 text-sm mt-1">{errors.party}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-lg font-medium text-gray-700">Symbol</label>
-              <input
-                type="file"
-                name="symbol"
-                value={candidateForm.symbol}
-                onChange={handleCandidateFormChange}
-                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${errors.symbol
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500"
-                  }`}
-                placeholder="Enter party symbol"
-              />
-              {errors.symbol && (
-                <p className="text-red-500 text-sm mt-1">{errors.symbol}</p>
-              )}
-            </div>
-            <button
-              type="submit"
-              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700"
-            >
-              Add Candidate
-            </button>
           </form>
         </div>
       </div>
@@ -340,4 +347,4 @@ const AdminPanel = () => {
   );
 };
 
-export default AdminPanel;
+export default AdminDashboard;

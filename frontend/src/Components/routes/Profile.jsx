@@ -100,13 +100,16 @@ const Profile = () => {
 
         {/* Verify Button */}
         {(!user.verified && user.data.role != "admin") && (
-          <div className="text-center">
+          <div  className="text-center">
             <Link to="/verify">
-              <button
+              <button 
+              style={{cursor: (user.data.profile === 1 && user.data.verified === 0 && user.data.rejected === 0) || (user.data.verified===1) ? 'not-allowed' : 'pointer', // Apply 'not-allowed' cursor if condition is true
+          }}
+            disabled={(user.data.profile === 1 && user.data.verified === 0 && user.data.rejected === 0) || (user.data.verified===1)}
 
                 className="w-full mt-4 py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               >
-                Verify Now
+                {(user.data.profile === 1&& user.data.verified===0 && user.data.rejected===0)? "Pending":(user.data.verified===1)?"Verified":"Verify Now"}
               </button>
             </Link>
           </div>

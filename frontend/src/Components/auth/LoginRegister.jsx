@@ -71,7 +71,6 @@ const Form = ({
   <form className="space-y-4" onSubmit={onSubmit}>
     <h1 className="text-2xl font-semibold mb-4">{title}</h1>
     {error.general && <p className="text-red-700">{error.general}</p>}
-    {console.log(error)}
     {fields.map(({ type, placeholder, value, onChange, isPassword, errorKey, options }, index) => (
       <div key={index} className="space-y-1">
         {isPassword ? (
@@ -185,16 +184,16 @@ const Login = () => {
 
     try {
       const response = await baseApi.post(`public/${endpoint}`, data);
-
-
       if (response.data.success) {
-        localStorage.setItem("userRole", response.data.user.role)
-        localStorage.setItem("userId", response.data.user.id)
+        console.log(response.data)
         if (!isRegister) {
+          localStorage.setItem("userRole", response.data.user.role)
+          localStorage.setItem("userId", response.data.user.id)
+          console.log(response.data.user.role)
           if (response.data.user.role === "admin") {
-            navigate("/admin-dashboard");
+            setTimeout(()=>{navigate("/admin-dashboard");},1000)
           } else {
-            navigate("/dashboard")
+            setTimeout(()=>{navigate("/dashboard");},1000)
           }
         } else {
 
@@ -204,7 +203,7 @@ const Login = () => {
         setError({ general: response.data.message });
       }
     } catch (error) {
-      setError({ general: "something went wrong.Please try again" });
+      setError({ general: error.message });
     } finally {
       // Stop loading spinner\
 
