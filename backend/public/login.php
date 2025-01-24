@@ -3,11 +3,10 @@ session_start();
 header('Content-Type: application/json');
 include '../config/database.php';
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
-// Debug connection
 if (!$conn || $conn->connect_error) {
     die(json_encode(["success" => false, "message" => "Database connection error: " . $conn->connect_error]));
 }

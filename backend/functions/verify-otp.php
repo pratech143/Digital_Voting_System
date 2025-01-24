@@ -12,8 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $email = $data['email'] ?? null;
     $otp = $data['otp'] ?? null;
-    error_log("Received Email: $email");
-    error_log("Received OTP: $otp");
+    // error_log("Received Email: $email");
+    // error_log("Received OTP: $otp");
 
     if (!$email || !$otp) {
         echo json_encode(["success" => false, "message" => "Email and OTP are required"]);
