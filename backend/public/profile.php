@@ -9,10 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $user_id = $_POST['user_id'] ?? ($_SESSION['user_id'] ?? null); 
-        // $user_id = $_SESSION['user_id'] ?? null;
-    
-        if (!$user_id) {
+    // $user_id = $_POST['user_id'] ?? ($_SESSION['user_id'] ?? null);
+       $user_id = $_SESSION['user_id'] ?? null;
+       
+    if (!$user_id) {
         echo json_encode(["success" => false, "message" => "User not authenticated"]);
         exit;
     }
@@ -28,31 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $upload_dir = '../uploads/voter_ids/';
- 
-        if (!is_dir($upload_dir)) {
-            if (!mkdir($upload_dir, 0755, true)) {
-                throw new Exception("Failed to create upload directory");
-            }
-        }
-
-        if (!is_writable($upload_dir)) {
-            throw new Exception("Upload directory is not writable");
-        }
-
         $voter_id_image = $_FILES['voter_id_image'];
 
         if ($voter_id_image['error'] !== UPLOAD_ERR_OK) {
             throw new Exception("Error uploading file: " . $voter_id_image['error']);
         }
 
-        $image_tmp_name = $voter_id_image['tmp_name'];
-        $image_name = "voter_" . $user_id . "_" . time() . ".png";
-        $voter_id_image_path = $upload_dir . $image_name;
-
-        if (!move_uploaded_file($image_tmp_name, $voter_id_image_path)) {
-            throw new Exception("Failed to save voter ID image");
-        }
+        $image_data = file_get_contents($voter_id_image['tmp_name']);
 
         $stmt = $conn->prepare("SELECT location_id FROM locations WHERE location_name = ? AND location_type = ?");
         $stmt->bind_param("ss", $location_name, $location_type);
@@ -84,10 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $conn->prepare("
             UPDATE users 
-            SET location_id = ?, ward_id = ?, role = ?, voter_id_image_path = ?, profile_completed = TRUE, verified = FALSE 
+            SET location_id = ?, ward_id = ?, role = ?, voter_id_image = ?, profile_completed = TRUE, verified = FALSE 
             WHERE user_id = ?
         ");
-        $stmt->bind_param("iissi", $location_id, $ward_id, $role, $voter_id_image_path, $user_id);
+        $stmt->bind_param("iibsi", $location_id, $ward_id, $role, $null, $user_id);
+        $stmt->send_long_data(3, $image_data); //binary data for the voter ID image
         $stmt->execute();
 
         echo json_encode([
