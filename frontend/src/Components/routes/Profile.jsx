@@ -5,7 +5,7 @@ import baseApi from '../../Api/baseApi';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   useEffect(() => {
     const fetchUserData = async () => {
@@ -15,12 +15,14 @@ const Profile = () => {
             "Content-Type": "multipart/form-data",
           },
         });
+      
         setUser(response.data);
         
+
         setLoading(false);
         console.log(response);
       } catch (error) {
-        setError('Error fetching user data');
+        setError('Error fetching user data',error.message);
         setLoading(false);
       }
     };
@@ -39,9 +41,9 @@ const Profile = () => {
   }
   if (!user) return null;
   return (
-    
+
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        {console.log (user.data)}
+      {console.log(user.data)}
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 space-y-6">
         <h2 className="text-center text-3xl font-bold text-gray-900">Your Profile</h2>
 
@@ -74,22 +76,34 @@ const Profile = () => {
             </div>
           </div>
 
-          {user.data.role!="admin" &&<div className="flex items-center justify-between">
+          {user.data.role != "admin" && <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-semibold text-gray-800">Verification Status</h3>
-              <p className={`text-gray-600 ${user.verified ? 'text-green-500' : 'text-red-500'}`}>
-                {user.verified ? 'Verified' : 'Not Verified'}
+              <p
+                className={`text-gray-600 ${user.data.verified
+                    ? 'text-green-500'
+                    : user.data.profile === 1
+                      ? 'text-yellow-500'
+                      : 'text-red-500'
+                  }`}
+              >
+                {user.data.verified
+                  ? 'Verified'
+                  : user.data.profile === 1
+                    ? 'Pending'
+                    : 'Not Verified'}
               </p>
             </div>
+
           </div>}
         </div>
 
         {/* Verify Button */}
-        {(!user.verified && user.data.role!="admin") && (
+        {(!user.verified && user.data.role != "admin") && (
           <div className="text-center">
             <Link to="/verify">
               <button
-                
+
                 className="w-full mt-4 py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
               >
                 Verify Now
@@ -98,7 +112,7 @@ const Profile = () => {
           </div>
         )}
 
-      
+
       </div>
     </div>
   );
