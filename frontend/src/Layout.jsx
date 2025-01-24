@@ -1,10 +1,10 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import Header from "./Components/Header/Header"; // Import your Header component
+import Header from "./Components/Header/Header";
 
 const Layout = () => {
   const location = useLocation();
-  const excludeHeaderRoutes = ["/", "/otp"]; // Routes where the header should be hidden
+  const excludeHeaderRoutes = ["/login", "/otp"];
   const shouldShowHeader = !excludeHeaderRoutes.includes(location.pathname);
 
   return (

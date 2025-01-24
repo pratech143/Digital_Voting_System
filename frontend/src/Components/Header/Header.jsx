@@ -12,7 +12,8 @@ export default function Header() {
             console.log(response.data);
           if (response.data.success) {
             localStorage.removeItem('userRole');
-            navigate('/');
+            localStorage.removeItem('userId')
+            navigate('/login');
           } else {
             console.log('Failed to log out');
           }

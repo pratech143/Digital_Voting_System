@@ -76,9 +76,11 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'approve') {
             // Approve the voter
             $stmt = $conn->prepare("UPDATE users SET verified = TRUE, rejected = FALSE WHERE user_id = ?");
+            echo json_encode(["success" => true, "message" => "Your are now verified"]);
         } else {
             // Reject the voter
             $stmt = $conn->prepare("UPDATE users SET verified = FALSE, rejected = TRUE WHERE user_id = ?");
+            echo json_encode(["success" => false, "message" => "Unfortunately you couldnot be verified"]);
         }
 
         $stmt->bind_param("i", $user_id);

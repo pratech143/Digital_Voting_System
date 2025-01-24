@@ -28,6 +28,38 @@ const AdminPanel = () => {
       setElectionStage("Post-Election");
     }
   };
+  const handleApproval = async (userId) => {
+    try {
+      const response = await baseApi.post(`admin/manage_voters.php`, {
+        action: "approve",
+        user_id: userId,
+      });
+  
+      if (response.data.success) {
+        console.log(response.data)
+      } else {
+        console.error("Failed to approve voter:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error approving voter:", error);
+    }
+  };
+  const handleRejection = async (userId) => {
+    try {
+      const response = await baseApi.post(`admin/manage_voters.php`, {
+        action: "reject",
+        user_id: userId,
+      });
+  
+      if (response.data.success) {
+        console.log(response.data)
+      } else {
+        console.error("Failed to approve voter:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error approving voter:", error);
+    }
+  };
 
   const markStageComplete = () => {
     setStageCompleted((prev) => ({
@@ -83,15 +115,39 @@ const AdminPanel = () => {
     return newErrors;
   };
 
-  const handleAddCandidate = (e) => {
+  const handleAddCandidate = async (e) => {
     e.preventDefault();
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
     } else {
-      setCandidates((prev) => [...prev, candidateForm]);
-      setCandidateForm({ post: "", name: "", party: "", symbol: "" });
-      setErrors({});
+      if (!userId || !electionId || !postId) {
+        setMessage("Please fill all fields.");
+        return;
+      }
+  
+      setLoading(true);
+      setMessage("");
+  
+      try {
+        const response = await baseApi.post(`admin/manage_voters.php`, {
+          user_id: userId,
+          action: "approve",
+          election_id: electionId,
+          post_id: postId,
+        });
+  
+        if (response.data.success) {
+          setMessage(response.data.message);
+        } else {
+          setMessage(response.data.message || "Failed to add candidate.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setMessage("An error occurred while adding the candidate.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -176,20 +232,22 @@ const AdminPanel = () => {
                       <p className="text-gray-600">user Id: {voter.user_id}</p>
                       <p className="text-gray-600">Address: {voter.location_name}- {voter.ward_number}</p>
                     </div>
-                    <button
+                    {!voter.rejected &&  <button
+                   onClick={handleApproval(voter.user_id)}
                       className={`w-full py-2 rounded-full text-white ${
                         voter.verified ? "bg-green-500" : "bg-green-500"
                       }`}
                     >
                       {voter.verified ? "Verified" : "Verify"}
-                    </button>
-                    <button
+                    </button>}
+                  {!voter.verified &&  <button
+                    onClick={handleRejection(voter.user_id)}
                       className={`w-full py-2 rounded-full text-white ${
                         voter.verified ? "bg-green-500" : "bg-red-500"
                       }`}
                     >
-                      {voter.rejected ? "rejected" : "Reject"}
-                    </button>
+                      { voter.rejected ? "rejected" : "Reject"}
+                    </button>}
                   </div>
                 ))}
             </div>

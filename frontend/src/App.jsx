@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import Layout from "./Layout";
 import LoginRegister from "./Components/auth/LoginRegister";
 import OTP from "./Components/auth/OTP";
@@ -10,35 +10,18 @@ import Home from "./Components/Home/Home";
 import Profile from "./Components/routes/Profile";
 import Verify from "./Components/routes/Verify";
 
-const user = {
-  name: "Pratik Chapagain",
-  email: "prtkchapagain@gmail.com",
-  verified: false,
-  votingHistory: [
-    { electionName: "Presidential Election 2024", date: "Jan 10, 2024" },
-  ],
-};
 
-const elections = [
-  { name: "Local Election 2025", date: "Mar 15, 2025" },
-  { name: "Regional Election 2025", date: "Jul 20, 2025" },
-];
-
-const handleLogout = () => {
-  // Remove the role from localStorage on logout
-  localStorage.removeItem("userRole");
-  setRole(null); // Update the state of the role to trigger re-render
-};
 
 const App = () => {
 
 
   return (
+    <BrowserRouter>
     <Routes>
       <Route element={<Layout />}>
         {/* If user is not logged in, go to login page */}
         <Route
-          path="/"
+          path="/login"
           element={<LoginRegister />}
         />
         <Route path="otp" element={<OTP />} />
@@ -46,14 +29,15 @@ const App = () => {
         <Route path="candidates" element={<Candidates />} />
 
         {/* Admin Panel Route */}
-        <Route path="adashboard" element={<AdminPanel />} />
+        <Route path="admin-dashboard" element={<AdminPanel />} />
 
         {/* Other Routes */}
-        <Route path="home" element={<Home user={user} handleLogout={handleLogout} />} />
-        <Route path="profile" element={<Profile user={user} />} />
+        <Route path="home" element={<Home  />} />
+        <Route path="profile" element={<Profile  />} />
         <Route path="verify" element={<Verify />} />
       </Route>
     </Routes>
+    </BrowserRouter>
   );
 };
 

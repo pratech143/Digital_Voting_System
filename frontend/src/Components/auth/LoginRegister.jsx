@@ -100,14 +100,14 @@ const Form = ({
         {error[errorKey] && <p className="text-red-700">{error[errorKey]}</p>}
       </div>
     ))}
-  
+
     <button
-  type="submit"
-  disabled={loading} // Disable the button during loading
-  className={`w-[40%] bg-bluish text-white py-3 rounded-lg hover:bg-slate-800 mx-auto ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
->
-  {loading ? <Spinner size={20} className="inline-block" /> : buttonText}
-</button>
+      type="submit"
+      disabled={loading} // Disable the button during loading
+      className={`w-[40%] bg-bluish text-white py-3 rounded-lg hover:bg-slate-800 mx-auto ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+    >
+      {loading ? <Spinner size={20} className="inline-block" /> : buttonText}
+    </button>
 
     {toggleViewText && (
       <button type="button" onClick={toggleView} className="text-bluish">
@@ -185,24 +185,26 @@ const Login = () => {
 
     try {
       const response = await baseApi.post(`public/${endpoint}`, data);
-      
-      
+
+
       if (response.data.success) {
+        localStorage.setItem("userRole", response.data.user.role)
+        localStorage.setItem("userId", response.data.user.id)
         if (!isRegister) {
-          if(response.data.user.role=="admin"){
-          navigate("/adashboard");
-          }else{
+          if (response.data.user.role === "admin") {
+            navigate("/admin-dashboard");
+          } else {
             navigate("/dashboard")
           }
         } else {
-          
+
           navigate("/otp", { state: { email } });
         }
       } else {
         setError({ general: response.data.message });
       }
-    } catch(error) {
-      setError({ general: "something went wrong.Please try again"});
+    } catch (error) {
+      setError({ general: "something went wrong.Please try again" });
     } finally {
       // Stop loading spinner\
 
@@ -280,7 +282,7 @@ const Login = () => {
                 buttonText="Register"
                 onSubmit={(e) => handleSubmit(e, true)}
                 loading={loading}
-                
+
 
               />
 
