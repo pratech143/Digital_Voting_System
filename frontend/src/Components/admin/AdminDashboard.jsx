@@ -34,7 +34,7 @@ const AdminPanel = () => {
         action: "approve",
         user_id: userId,
       });
-  
+
       if (response.data.success) {
         console.log(response.data)
       } else {
@@ -50,7 +50,7 @@ const AdminPanel = () => {
         action: "reject",
         user_id: userId,
       });
-  
+
       if (response.data.success) {
         console.log(response.data)
       } else {
@@ -125,10 +125,10 @@ const AdminPanel = () => {
         setMessage("Please fill all fields.");
         return;
       }
-  
+
       setLoading(true);
       setMessage("");
-  
+
       try {
         const response = await baseApi.post(`admin/manage_voters.php`, {
           user_id: userId,
@@ -136,7 +136,7 @@ const AdminPanel = () => {
           election_id: electionId,
           post_id: postId,
         });
-  
+
         if (response.data.success) {
           setMessage(response.data.message);
         } else {
@@ -179,13 +179,12 @@ const AdminPanel = () => {
                 key={stage}
                 disabled={isStageLocked(stage)}
                 onClick={() => setElectionStage(stage)}
-                className={`px-6 py-3 rounded-full font-semibold ${
-                  isStageLocked(stage)
+                className={`px-6 py-3 rounded-full font-semibold ${isStageLocked(stage)
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                     : electionStage === stage
-                    ? "bg-blue-600 text-white"
-                    : "bg-blue-400 text-white"
-                }`}
+                      ? "bg-blue-600 text-white"
+                      : "bg-blue-400 text-white"
+                  }`}
               >
                 {stage}
               </button>
@@ -221,33 +220,35 @@ const AdminPanel = () => {
                   >
                     <img
                       src={voter.voter_id_image_path}
-                      
+
                       alt={`${voter.full_name}'s document`}
                       className="w-full h-40 object-cover rounded-lg border-2 border-blue-500"
                     />
                     <div className="text-center">
-                    <p>{voter.voter_id_image_path}</p>
+                      <p>{voter.voter_id_image_path}</p>
                       <h3 className="text-xl font-semibold text-gray-800">{voter.full_name}</h3>
                       <p className="text-gray-600">Email: {voter.email}</p>
                       <p className="text-gray-600">user Id: {voter.user_id}</p>
                       <p className="text-gray-600">Address: {voter.location_name}- {voter.ward_number}</p>
                     </div>
-                    {!voter.rejected &&  <button
-                   onClick={handleApproval(voter.user_id)}
-                      className={`w-full py-2 rounded-full text-white ${
-                        voter.verified ? "bg-green-500" : "bg-green-500"
-                      }`}
-                    >
-                      {voter.verified ? "Verified" : "Verify"}
-                    </button>}
-                  {!voter.verified &&  <button
-                    onClick={handleRejection(voter.user_id)}
-                      className={`w-full py-2 rounded-full text-white ${
-                        voter.verified ? "bg-green-500" : "bg-red-500"
-                      }`}
-                    >
-                      { voter.rejected ? "rejected" : "Reject"}
-                    </button>}
+
+                    {!voter.rejected && (
+                      <button
+                        onClick={() => handleApproval(voter.user_id)} // Wrap function in an arrow function
+                        className="w-full py-2 rounded-full text-white bg-green-500"
+                      >
+                        {voter.verified ? "Verified" : "Verify"}
+                      </button>
+                    )}
+                    {!voter.verified && (
+                      <button
+                        onClick={() => handleRejection(voter.user_id)} // Wrap function in an arrow function
+                        className="w-full py-2 rounded-full text-white bg-red-500"
+                      >
+                        {voter.rejected ? "Rejected" : "Reject"}
+                      </button>
+                    )}
+
                   </div>
                 ))}
             </div>
@@ -265,11 +266,10 @@ const AdminPanel = () => {
                 name="post"
                 value={candidateForm.post}
                 onChange={handleCandidateFormChange}
-                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
-                  errors.post
+                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${errors.post
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-blue-500"
-                }`}
+                  }`}
                 placeholder="Enter post (e.g., Mayor)"
               />
               {errors.post && (
@@ -283,11 +283,10 @@ const AdminPanel = () => {
                 name="name"
                 value={candidateForm.name}
                 onChange={handleCandidateFormChange}
-                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
-                  errors.name
+                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${errors.name
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-blue-500"
-                }`}
+                  }`}
                 placeholder="Enter candidate's name"
               />
               {errors.name && (
@@ -301,11 +300,10 @@ const AdminPanel = () => {
                 name="party"
                 value={candidateForm.party}
                 onChange={handleCandidateFormChange}
-                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
-                  errors.party
+                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${errors.party
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-blue-500"
-                }`}
+                  }`}
                 placeholder="Enter party name"
               />
               {errors.party && (
@@ -319,11 +317,10 @@ const AdminPanel = () => {
                 name="symbol"
                 value={candidateForm.symbol}
                 onChange={handleCandidateFormChange}
-                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
-                  errors.symbol
+                className={`w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${errors.symbol
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-blue-500"
-                }`}
+                  }`}
                 placeholder="Enter party symbol"
               />
               {errors.symbol && (

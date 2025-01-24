@@ -80,16 +80,16 @@ const Profile = () => {
             <div>
               <h3 className="text-xl font-semibold text-gray-800">Verification Status</h3>
               <p
-                className={`text-gray-600 ${user.data.verified
+                className={`text-gray-600 ${(user.data.verified===1)
                     ? 'text-green-500'
-                    : user.data.profile === 1
+                    :  (user.data.profile === 1&& user.data.verified===0 && user.data.rejected===0)
                       ? 'text-yellow-500'
                       : 'text-red-500'
                   }`}
               >
-                {user.data.verified
-                  ? 'Verified'
-                  : user.data.profile === 1
+                {(user.data.verified===1)
+                  ? 'Verified':(user.data.rejected===1)
+                  ?'rejected': (user.data.profile === 1&& user.data.verified===0 && user.data.rejected===0)
                     ? 'Pending'
                     : 'Not Verified'}
               </p>

@@ -16,7 +16,7 @@ $user_id = $_SESSION['user_id'];
 
 try {
 
-    $stmt = $conn->prepare("SELECT user_id, full_name, role, email , profile_completed,verified FROM users WHERE user_id = ?");
+    $stmt = $conn->prepare("SELECT user_id, full_name, role, email , profile_completed,verified,rejected FROM users WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -31,7 +31,8 @@ try {
                 'role' => $user['role'],
                 'email' => $user['email'],
                 'profile'=> $user['profile_completed'],
-                'verified'=>$user['verified']
+                'verified'=>$user['verified'],
+                'rejected'=>$user['rejected']
             ],
         ]);
     } else {
