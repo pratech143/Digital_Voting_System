@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Get other form data
     $location_name = $_POST['location_name'] ?? null;
     $location_type = $_POST['location_type'] ?? null;
     $ward_number = $_POST['ward_number'] ?? null;
@@ -36,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Error uploading file: " . $voter_id_image['error']);
         }
 
-        // Read the image file as binary data
         $image_data = file_get_contents($voter_id_image['tmp_name']);
 
         // Fetch the user's current rejection status
@@ -98,6 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "message" => "Profile updated successfully. Awaiting admin approval."
         ]);
     } catch (Exception $e) {
+        // Log the error and return a JSON response
+        error_log("Error: " . $e->getMessage());
         echo json_encode([
             "success" => false,
             "message" => "Error updating profile: " . $e->getMessage()
